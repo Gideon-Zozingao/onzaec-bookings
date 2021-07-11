@@ -1,0 +1,9 @@
+<?php
+session_start();
+if(isset($_SESSION['logedin'])&&$_SESSION['logedin']==true){
+  session_destroy();
+  header("Location:../");
+}else{
+  header("Location:../");
+}
+?>

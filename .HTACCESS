@@ -1,0 +1,12 @@
+<IfModule mod_rewrite.c>
+Options +FollowSymLinks
+RewriteEngine On
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteCond %{SCRIPT_FILENAME} !-f
+RewriteRule ^properties/([0-9a-zA-Z_-]+)   ./properties.php?Propertylink=$1 [NC,L]
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteCond %{SCRIPT_FILENAME} !-f
+RewriteRule ^properties/([0-9a-zA-Z_-]+)/([0-9a-zA-Z_-]+) ./properties.php?Propertylink=$1&feature=$2 [NC,L]
+#
+RewriteRule ^search.accomodations/([a-z-]+) ./search.accomodations.php?Destination=$1 [NC,L]
+</IfModule>

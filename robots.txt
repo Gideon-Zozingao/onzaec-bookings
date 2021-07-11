@@ -1,0 +1,10 @@
+User-agent: *
+Disallow:/controllers/
+Disallow:/account.php
+Disallow:/properties/
+Disallow:/public/
+Disallow:/src/
+Disallow:/property-account.php
+Disallow:/views/
+Disallow:/users/
+Disallow:/profile.php
