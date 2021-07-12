@@ -115,7 +115,7 @@ while($QueryResultsArray=mysqli_fetch_array($getRecommendedResultsQuery)){
   GROUP BY propertyName";
   $result = mysqli_query($conn,$total_pages_sql);
   if(!$result){
-    die("Errro Processinf your Page Request.".mysqli_error($conn));
+    echo("Errro Processinf your Page Request.".mysqli_error($conn));
   }
   $total_rows = mysqli_num_rows($result);
   $total_pages = ceil($total_rows / $no_of_records_per_page);
