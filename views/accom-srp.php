@@ -87,7 +87,7 @@ while($QueryResultsArray=mysqli_fetch_array($getRecommendedResultsQuery)){
 
         ?>
 
-        <span class="alert alert-dnager text-center">Erro Loding Data</span>
+        <span class="alert alert-danger text-center">Erro Loding Data</span>
         <?php
         
 
@@ -121,11 +121,11 @@ while($QueryResultsArray=mysqli_fetch_array($getRecommendedResultsQuery)){
   GROUP BY propertyName";
   $result = mysqli_query($conn,$total_pages_sql);
   if(!$result){?>
-    <span class="alert alert-dnager">Error Determining the Number of Page</span>
+    <span class="alert alert-danger">Error Determining the Number of Page</span>
     <?php
     
   }
-  
+
   $total_rows = mysqli_num_rows($result);
   $total_pages = ceil($total_rows / $no_of_records_per_page);
       $AccomSearchQuery="SELECT*FROM properties JOIN rooms on rooms.propertyId=properties.propertyId WHERE  properties.location = '$_SESSION[sqDestination]' AND  availabilityStatus='Available' AND rooms.publoicationStatus='Published'
@@ -187,57 +187,7 @@ while($QueryResultsArray=mysqli_fetch_array($getRecommendedResultsQuery)){
             </div>
             </div>
             </div>
-            <!-- <script type="text/javascript">
-              $(document).ready(()=>{
-                var reservationButton=$(".reservationButton");
-                //alert(reservationButton);
-                for(let i=0; i<reservationButton.length;i++){
-                  $(reservationButton[i]).on("click",(e)=>{
-                    e.preventDefault();
-                    $.ajax({
-                      url:`Booknow?roomid=${reservationButton[i].accessKey}`,
-                      type:"GET",
-                      beforeSend:()=>{
-                        $("#modal").show();
-                        $("#modal-content").html("<div class='row'><div class='col-md-4'></div><div class='col-md-4'><img src='public/images/loading.gif'></div><div class='col-md-4'></div></div>")
-                      },
-                      success:(data)=>{
-                        setTimeout(()=>{
-                        $("#modal-content").html(data);
-                      },1500)
-
-                      }
-
-                    })
-                  })
-                }
-              })
-            </script> -->
-            <!-- <script type="text/javascript">
-              $(document).ready(function(){
-                var roomdetailslink=$(".roomdetailsLink");
-              //  console.log(roomdetailslink);
-                for(let i=0; i<roomdetailslink.length;i++){
-                  $(roomdetailslink[i]).on("click",function(e){
-                    e.preventDefault();
-                    $.ajax({
-                      url:`views/room-details.php?roomId=${roomdetailslink[i].accessKey}`,
-                      type:"GET",
-                      beforeSend:function(){
-                        $("#modal").fadeIn()
-                        $("#modal-content").html("<div class='row'><div class='col-md-4'></div><div class='col-md-4'><img src='public/images/loading.gif'></div><div class='col-md-4'></div></div>");
-                      },
-                      success:function(data){
-                        setTimeout(()=>{
-                        $("#modal-content").html(data)
-                      },1500)
-                      }
-                    })
-
-                  })
-                }
-              })
-            </script> -->
+            
             </section>
             <hr>
           <!-- End About Section -->
@@ -289,10 +239,18 @@ while($QueryResultsArray=mysqli_fetch_array($getRecommendedResultsQuery)){
 
         <?php
     }else{
-      echo("Error while Processing Your Search Queries: ".mysqli_error($conn));
+      ?>
+      <span class="alert alert-danger">Cannot Process Your Search Queries at this time</span>
+
+      <?php
+    
     }
     }
     }else{
+      ?>
+      
+
+      <?php
       echo"<h5>Accomodation Search</h5>";
     }
 }
