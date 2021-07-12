@@ -26,9 +26,10 @@ if($results>0){
     <?php
   }
 }else{
+  echo echo "<span class='alert alert-warning'>Connection Error </span>".mysqli_error($conn);
 }
 }else{
-  echo "<span class='alert alert-warning'>System Error</span>";
+  echo "<span class='alert alert-warning'>Connection Error </span>".mysqli_error($conn);
 }
 ?>
   </div>
