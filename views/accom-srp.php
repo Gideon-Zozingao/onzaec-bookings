@@ -2,7 +2,8 @@
 if(empty($_SESSION["sqNumberOfAdult"])&&empty($_SESSION["sqNumberOfChildren"])){
 echo "<p  class='text-warning text-center'>Include number  of  Children or  number Adults  in  your  Search</p>";
 }else{
-  if(!empty($_SESSION["sqDestination"])&&!empty($_SESSION["sqCheckoutdate"])&&!empty($_SESSION["sqCheckinDate"])){
+  if($_SESSION["sqDestination"]!=""&&$_SESSION["sqCheckoutdate"]!=""&&$_SESSION["sqCheckinDate"]!=""){
+
       include("controllers/config.php");
       include("controllers/classes/db-class.php");
       $db=new db($h,$u,$pass,$db);
@@ -142,7 +143,7 @@ try {
               <h3><a href="../properties/<?php echo$rows['property_link']?>" target="_blank"> <?php echo $rows['propertyName']?></a> </h3>
               <?php
               $sql2="SELECT *FROM site_profile WHERE  propertyId='$rows[propertyId]'";
-              // try {
+              try {
                 $query2=$conn->query($sql2);
                 $Result2=$query2->fetch();
 
@@ -153,10 +154,10 @@ try {
                 <p class="font-italic"><i class="bx bx-phone-call"></i> <?php echo $Result2['propertyPhone']?></p>
 
                 <?php
-              // } catch (PDOException $e) {
-              //   echo $e->getMessage();
-              //
-              // }
+              } catch (PDOException $e) {
+                echo $e->getMessage();
+
+              }
 
         ?>
         <p class="text-left"><?php echo $rows['property_description']?></p>
@@ -230,10 +231,8 @@ try {
       </div>
     </div>
   </div>
-
   <?php
 } catch (PDOException $e) {
-
 }
 
     }
@@ -242,8 +241,6 @@ try {
       <section class="container">
         <h5 class="text-muted text-center">Search Sessions Are Empty</h5>
       </section>
-
-
       <?php
 
     }
