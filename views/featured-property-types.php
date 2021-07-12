@@ -33,10 +33,10 @@ if($results>0){
     <?php
   }
 }else{
-  echo "<span class='alert alert-warning'>Connection Error </span>".mysqli_error($conn);
+  echo "<span class='alert alert-warning'>Connection Error 1 </span>".mysqli_error($conn);
 }
 }else{
-  echo "<span class='alert alert-warning'>Connection Error </span>".mysqli_error($conn);
+  echo "<span class='alert alert-warning'>Connection Error 2 </span>".mysqli_error($conn);
 }
 ?>
   </div>
