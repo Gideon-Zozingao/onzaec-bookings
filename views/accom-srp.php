@@ -239,7 +239,10 @@ try {
     }
     }else{
       ?>
-      <h5>Search Sessions Are Empty</h5>
+      <section class="container">
+        <h5 class="text-muted text-center">Search Sessions Are Empty</h5>
+      </section>
+
 
       <?php
 
