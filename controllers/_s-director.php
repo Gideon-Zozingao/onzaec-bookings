@@ -21,10 +21,10 @@ if($_SERVER["REQUEST_METHOD"]=="POST"){
   		$_SESSION["sqDestination"]=$destination;
   		$_SESSION["sqCheckinDate"]=$checkinDate;
   		$_SESSION["sqCheckoutdate"]=$checkoutdate;
-		header("Location:../search.accomodations/$_SESSION[sqDestination]");
+		header("Location:../search.accomodations.php?Destination=$_SESSION[sqDestination]");
 
 }else{
-		header("Location:../search.accomodations");
+		header("Location:../search.accomodations.php");
 }
 
 }else{
