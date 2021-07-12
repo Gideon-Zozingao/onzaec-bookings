@@ -24,7 +24,7 @@ include("views/layout.php");
             //session_start();
             if(isset($_SESSION["sqNumberOfAdult"])&&isset($_SESSION["sqNumberOfChildren"])&&isset($_SESSION["sqDestination"])&&isset($_SESSION["sqCheckinDate"])&&isset($_SESSION["sqCheckoutdate"])){?>
             <div  class="">
-                <form class="accom-search-form " action="../controllers/_s-director" method="POST"  name="search.accomodations" class="form-inline" id="accom-search-form">
+                <form class="accom-search-form " action="../controllers/_s-director.php" method="POST"  name="search.accomodations" class="form-inline" id="accom-search-form">
                   <div class="form-group">
                     <label>Destination</label>
                       <input type="text" class="form-control form-control-lg" placeholder="Destination" name="destination"  value="<?php echo($_SESSION["sqDestination"]) ?>" id="destination">
