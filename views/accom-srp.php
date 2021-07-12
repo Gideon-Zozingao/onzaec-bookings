@@ -11,7 +11,7 @@ echo "<p  class='text-warning text-center'>Include number  of  Children or  numb
         ?>
         <div class="col-md-4 offset-4">
           <h5 class="text-muted text-center"> Unable to Show your Resuts now</h5>
-          <p class="text-muted text-center">Conatact the Administrator Now</p>
+          <p class="text-muted text-center">Contact the Administrator Now</p>
         </div>
         <?php
         //echo("<h5>Cannot Display Your Results Now</h5>Trya again Later!");
@@ -229,6 +229,10 @@ try {
 
     }
     }else{
+      ?>
+
+
+      <?php
       echo"<h5>Accomodation Search</h5>";
     }
 }
