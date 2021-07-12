@@ -123,7 +123,7 @@ if(isset($_SESSION['logedin'])&&$_SESSION['logedin']==true){
     $("#user_reg_form").on("submit",function(e){
           e.preventDefault();
       $.ajax({
-            url:"controllers/register-user",
+            url:"controllers/register-user.php",
             type:"POST",
             data:new FormData(this),
             contentType:false,

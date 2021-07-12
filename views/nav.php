@@ -34,7 +34,7 @@
       $(reservationButton[i]).on("click",(e)=>{
         e.preventDefault();
         $.ajax({
-          url:`../Booknow?roomid=${reservationButton[i].accessKey}`,
+          url:`../Booknow.php?roomid=${reservationButton[i].accessKey}`,
           type:"GET",
           beforeSend:()=>{
             $("#modal").fadeToggle("slow");
@@ -57,9 +57,9 @@ if(isset($_SESSION["logedin"])&&$_SESSION['logedin']===true){
 <nav class="nav-menu d-none d-lg-block">
   <ul>
     <li class="active"><a href="/">Home</a></li>
-    <li><a href="about">About us </a></li>
+    <li><a href="about.php">About us </a></li>
 
-    <li><a href="events">Events</a></li>
+    <li><a href="events.php">Events</a></li>
 
     <li class="drop-down">
       <a href="#" class="text-success"> <span class="fa fa-user"></span> <?php echo $_SESSION['name'].' '.$_SESSION['surname']?></a></i>
@@ -67,12 +67,12 @@ if(isset($_SESSION["logedin"])&&$_SESSION['logedin']===true){
         <li class="drop-down">
           <a href="#"><i  class="fa fa-cog"></i></a>
           <ul>
-            <li><a href="property-listing">List a Property</a></li>
-            <li><a href="account.switch" id="account-switch">Switch  Account</a></li>
+            <li><a href="property-listing.php">List a Property</a></li>
+            <li><a href="account.switch.php" id="account-switch">Switch  Account</a></li>
           </ul>
         </li>
-        <li><a href="profile">Your Profile</a></li>
-        <li><a href="logout">Sigout</a></li>
+        <li><a href="profile.php">Your Profile</a></li>
+        <li><a href="logout.php">Sigout</a></li>
       </ul>
     </li>
   </ul>
@@ -102,14 +102,14 @@ if(isset($_SESSION["logedin"])&&$_SESSION['logedin']===true){
   <nav class="nav-menu d-none d-lg-block">
     <ul>
       <li class="active"><a href="/">Home</a></li>
-      <li><a href="about">About us</a></li>
+      <li><a href="about.php">About us</a></li>
 
       <li><a href="properties.php">Properties</a></li>
-      <li><a href="events">Events</a></li>
+      <li><a href="events.php">Events</a></li>
       <li class="drop-down"><a href="#"><i  class="fa fa-user"></i></a>
         <ul>
-          <li><a href="register" id="signupLink">Signup</a></li>
-          <li><a href="login" id="loginLink">Signin</a></li>
+          <li><a href="register.php" id="signupLink">Signup</a></li>
+          <li><a href="login.php" id="loginLink">Signin</a></li>
         </ul>
       </li>
       <li><a href="contact-us">Contact Us</a></li>
