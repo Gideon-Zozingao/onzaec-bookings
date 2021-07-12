@@ -11,7 +11,7 @@ echo "<p  class='text-warning text-center'>Include number  of  Children or  numb
         ?>
         <div class="col-md-4 offset-4">
           <h5 class="text-muted text-center"> Unable to Show your Resuts now</h5>
-          <p class="text-muted text-center">Conatact the Administrator Now</p>
+          <p class="text-muted text-center">Contact the Administrator Now</p>
         </div>
         <?php
         //echo("<h5>Cannot Display Your Results Now</h5>Trya again Later!");
@@ -78,12 +78,18 @@ while($QueryResultsArray=mysqli_fetch_array($getRecommendedResultsQuery)){
         })
       </script>
 <?php
-//echo $QueryResults."Recomende Rooms Available";
+
 }else{
 //echo "NO  recommended rooms available";
 }
 
       }else{
+
+        ?>
+
+        <span class="alert alert-dnager text-center">Erro Loding Data</span>
+        <?php
+        
 
 }
 
@@ -114,9 +120,12 @@ while($QueryResultsArray=mysqli_fetch_array($getRecommendedResultsQuery)){
   $total_pages_sql="SELECT  *  FROM properties JOIN rooms on rooms.propertyId=properties.propertyId WHERE  properties.location = '$_SESSION[sqDestination]' AND  rooms.availabilityStatus='Available' AND publoicationStatus='Published' AND roomCapacity>=$totalPeople OR  numberOfBed>=$totalPeople
   GROUP BY propertyName";
   $result = mysqli_query($conn,$total_pages_sql);
-  if(!$result){
-    echo("Errro Processinf your Page Request.".mysqli_error($conn));
+  if(!$result){?>
+    <span class="alert alert-dnager">Error Determining the Number of Page</span>
+    <?php
+    
   }
+  
   $total_rows = mysqli_num_rows($result);
   $total_pages = ceil($total_rows / $no_of_records_per_page);
       $AccomSearchQuery="SELECT*FROM properties JOIN rooms on rooms.propertyId=properties.propertyId WHERE  properties.location = '$_SESSION[sqDestination]' AND  availabilityStatus='Available' AND rooms.publoicationStatus='Published'
