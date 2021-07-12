@@ -9,12 +9,12 @@ include("../controllers/config.php");
 include('../controllers/classes/db-class.php');
 $thisdb=new db($h,$u,$pass,$db);
 $conn=$thisdb->connect();
-if(!$conn){
+if($conn==true){
   ?>
 
-<h5 class="text-muted text-center">Connection Not Success</h5>
+<h5 class="text-success text-center">Connection  Success</h5>
   <?php
-  die();
+  //die();
 }
 $q="SELECT  * FROM  properties
 GROUP BY  propertyType";
