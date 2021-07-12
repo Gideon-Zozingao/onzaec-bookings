@@ -12,7 +12,7 @@ $conn=$thisdb->connect();
 if($conn!=true){
   ?>
 
-<h5 class="text- text-center">Connection  Success</h5>
+<h5 class="alert alert-danger text-center">Connection Failed</h5>
   <?php
   //die();
 }
@@ -33,10 +33,14 @@ if($results>0){
     <?php
   }
 }else{
-  echo "<span class='alert alert-warning'>Connection Error 1 </span>".mysqli_error($conn);
+
 }
-}else{
-  echo "<span class='alert alert-warning'>Connection Error 2 </span>".mysqli_error($conn);
+}else{?>
+
+  <span class="alert alert-danger text-center">Connection failed</span>
+
+  <?php
+  
 }
 ?>
   </div>
