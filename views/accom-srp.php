@@ -230,10 +230,10 @@ try {
     }
     }else{
       ?>
-
+      <h5>Search Sessions Are Empty</h5>
 
       <?php
-      echo"<h5>Accomodation Search</h5>";
+
     }
 }
 ?>
