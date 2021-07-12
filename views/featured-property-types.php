@@ -9,6 +9,13 @@ include("../controllers/config.php");
 include('../controllers/classes/db-class.php');
 $thisdb=new db($h,$u,$pass,$db);
 $conn=$thisdb->connect();
+if(!$conn){
+  ?>
+
+<h5 class="text-muted text-center">Connection Not Success</h5>
+  <?php
+  die();
+}
 $q="SELECT  * FROM  properties
 GROUP BY  propertyType";
 $query=mysqli_query($conn,$q);
@@ -26,7 +33,7 @@ if($results>0){
     <?php
   }
 }else{
-  echo echo "<span class='alert alert-warning'>Connection Error </span>".mysqli_error($conn);
+  echo "<span class='alert alert-warning'>Connection Error </span>".mysqli_error($conn);
 }
 }else{
   echo "<span class='alert alert-warning'>Connection Error </span>".mysqli_error($conn);
