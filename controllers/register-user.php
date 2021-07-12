@@ -151,7 +151,7 @@
                 }
         }else{
           $alert['alert_type']='error';
-          $alert['message']='User Account Account Creation failed'.$regUser;
+          $alert['message']='Cannot register User Information at the Moment ' .$regUser;
           die(json_encode($alert));
         }
 
