@@ -19,7 +19,7 @@ if(!$conn){
 $q="SELECT  * FROM  properties
 GROUP BY  propertyType";
 $query=mysqli_query($conn,$q);
-if($query){
+if($query==true){
 $results=mysqli_num_rows($query);
 if($results>0){
   while($rows=mysqli_fetch_array($query)){
