@@ -21,6 +21,7 @@ try {
   $query=$conn->query("SELECT  * FROM  properties
   GROUP BY  propertyType");
   $query->setFetchMode(PDO::FETCH_ASSOC);
+  $rowCount=$query->countRow();
   while($row=$query->fetch()){?>
     <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0">
       <div class="icon-box" data-aos="fade-up" data-aos-delay="100">
