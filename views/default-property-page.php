@@ -2,6 +2,8 @@
 $page_tittle="Onaze-Bookings || Properties";
 ?>
 <title><?php echo $page_tittle?></title>
+
+<?php include("views/layout-links.php") ?>
 </head>
 <body>
   <header id="header" class="fixed-top">
