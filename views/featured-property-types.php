@@ -12,32 +12,33 @@ $conn=$thisdb->connect();
 if($conn!=true){
   ?>
 
-<h5 class="text- text-center">Connection  Success</h5>
+<h5 class="text-danger text-center">Connection  Success</h5>
   <?php
   //die();
 }
-$q="SELECT  * FROM  properties
-GROUP BY  propertyType";
-$query=mysqli_query($conn,$q);
-if($query==true){
-$results=mysqli_num_rows($query);
-if($results>0){
-  while($rows=mysqli_fetch_array($query)){
-    ?>
+
+try {
+  $query=$conn->query("SELECT  * FROM  properties
+  GROUP BY  propertyType");
+  $query->setFetchMode(PDO::FETCH_ASSOC);
+  while($row=$query->fetch()){?>
     <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0">
       <div class="icon-box" data-aos="fade-up" data-aos-delay="100">
-        <h4 class="title"><a href=""><?php echo $rows["propertyType"];?></a></h4>
+        <h4 class="title"><a href=""><?php echo $row["propertyType"];  ?></a></h4>
         <p class="description">Voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi</p>
       </div>
     </div>
+
     <?php
+
   }
-}else{
-  echo "<span class='alert alert-warning'>Connection Error 1 </span>".mysqli_error($conn);
+
+} catch (PDOException $e) {
+echo $e->getMessage();
 }
-}else{
-  echo "<span class='alert alert-warning'>Connection Error 2 </span>".mysqli_error($conn);
-}
+
+
+
 ?>
   </div>
   </div>

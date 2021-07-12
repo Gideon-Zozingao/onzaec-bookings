@@ -70,7 +70,7 @@ public function setBookingId($bookingId){
     $this->adults= $adults;
  }
 
- //sets and Modifys acustommer Messages
+ //sets and Modifys custommer Messages
  public function setCustomerMessage($customerMessage){
    $this->customerMessage=$customerMessage ;
  }

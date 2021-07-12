@@ -14,12 +14,14 @@ class db
     $this->schema=$schema;
   }
   function  connect(){
-    $con=mysqli_connect($this->host,$this->user,$this->password,$this->schema);
-    if($con){
-      return  $con;
-    }else{
-      return  "Error  Connecting:".mysqli_error($con);
+    try{
+      $con=new PDO("mysql:host=$this->host;dbname=$this->schema", $this->user, $this->password);
+      $con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
+      return $con;
+    }catch(PDOException $e){
+      return  $e;
     }
+
   }
 }
 

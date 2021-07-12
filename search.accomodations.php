@@ -4,15 +4,14 @@ include("views/layout.php");
   //echo "No  Post  Re Request  Recieed from  the Client";
   $page_tittle="Onaze-Bookings  ||Accomodations-Search ";
   echo"<title>$page_tittle</title>";
-
   ?>
   <?php include("views/layout-links.php") ?>
   </head>
   <body>
-      <!-- ======= Header ======= -->
+
       <header id="header" class="fixed-top">
         <div class="container d-flex align-items-center">
-          <a href="/" class="logo mr-auto"><img src="public/images/Onzaec-bookings-64x64.png" alt=""></a>
+          
           <?php include("views/nav.php")?>
         </div>
       </header><!-- End Header -->

@@ -4,13 +4,13 @@ $page_tittle="Onzaec Bookings || Contact Us";
 ?>
 
     <title><?php echo $page_tittle?></title>
+    <?php include("views/layout-links.php") ?>
 </head>
 <body>
     <!-- ======= Top Bar ======= -->
   <!-- ======= Header ======= -->
   <header id="header" class="fixed-top">
-    <div class="container d-flex align-items-center">
-<a href="/" class="logo mr-auto"><img src="public/images/Onzaec-bookings-64x64.png" alt=""></a>
+    
 <?php include("views/nav.php")?>
     </div>
   </header><!-- End Header -->
