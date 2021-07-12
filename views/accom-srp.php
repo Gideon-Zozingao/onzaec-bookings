@@ -32,49 +32,58 @@ echo "<p  class='text-warning text-center'>Include number  of  Children or  numb
 <?php
 $getRecommendedResults="SELECT*FROM rooms JOIN properties on properties.propertyId=rooms.propertyId  WHERE (location= '$_SESSION[sqDestination]' AND  availabilityStatus='Available' AND publoicationStatus='Published' AND roomCapacity='$totalPeople' OR  numberOfBed='$totalPeople') ORDER BY price ASC LIMIT 3";
 try {
-
-  $getRecommendedResultsQuery=$conn->query($getRecommendedResults);
+$getRecommendedResultsQuery=$conn->query($getRecommendedResults);
 
   $getRecommendedResultsQuery->setFetchMode(PDO::FETCH_ASSOC);
-  ?>
-  <section class="bg-light" id="recomended-room">
-      <span class="close" id="close-recomended-rooms">&times;</span>
-    <div class="container ">
-  <h4 class="text-center text-success">Recomended Rooms</h4>
-  <hr>
-    <div class="row">
-  <?php
-  while($QueryResultsArray=$getRecommendedResultsQuery->fetch()){?>
-    <div class="col-md-4">
-    <div class="card">
-    <div class="card-body">
-    <h5><?php echo $QueryResultsArray["roomCategory"] ?> </h5>
-    <p>
-    <a href="../properties.php?Propertylink=<?php echo $QueryResultsArray["property_link"]?>" target="_blank"> <?php echo $QueryResultsArray["propertyName"] ?></a>
-       </p>
-    <img src="../public/gallery/images/<?php echo $QueryResultsArray["roomCoverPhoto"]?>" alt="" class="img-responsive img-fluid">
-    <p>  <span class="h4 text-warning"> K <?php echo $QueryResultsArray["price"] ?></span> /Night </p>
+  $countResult=$getRecommendedResultsQuery->rowCount();
+  if($countResult>0){
+    ?>
+    <section class="bg-light" id="recomended-room">
+        <span class="close" id="close-recomended-rooms">&times;</span>
+      <div class="container ">
+    <h4 class="text-center text-success">Recomended Rooms</h4>
+    <?php echo $countResult." Results available"; ?>
     <hr>
-      <a href="#" class="btn btn-info btn-lg reservationButton" accessKey="<?php echo $QueryResultsArray['roomId']?>">Book Now</a> | <a href="#" class="roomdetailsLink text-primary text-right" accessKey="<?php  echo $QueryResultsArray['roomId']?>">More Details</a>
-    </div>
-    </div>
-    </div>
+      <div class="row">
+    <?php
+    while($QueryResultsArray=$getRecommendedResultsQuery->fetch()){?>
+      <div class="col-md-4">
+          <div class="card">
+              <div class="card-body">
+                  <h5><?php echo $QueryResultsArray["roomCategory"] ?> </h5>
+                  <p>
+                  <a href="../properties.php?Propertylink=<?php echo $QueryResultsArray["property_link"]?>" target="_blank"> <?php echo $QueryResultsArray["propertyName"] ?></a>
+                     </p>
+                  <img src="../public/gallery/images/<?php echo $QueryResultsArray["roomCoverPhoto"]?>" alt="" class="img-responsive img-fluid">
+                  <p>  <span class="h4 text-warning"> K <?php echo $QueryResultsArray["price"] ?></span> /Night </p>
+                  <hr>
+                    <a href="#" class="btn btn-info btn-lg reservationButton" accessKey="<?php echo $QueryResultsArray['roomId']?>">Book Now</a> | <a href="#" class="roomdetailsLink text-primary text-right" accessKey="<?php  echo $QueryResultsArray['roomId']?>">More Details</a>
+              </div>
+          </div>
+      </div>
+
+      <?php
+
+    }
+    ?>
+  </div>
+  </section>
+  <script type="text/javascript">
+    $(function(){
+      $("#recomended-room").css("border","1px solid #1E90FF")
+      $("#recomended-room").css("border-radius","5px")
+      $("#close-recomended-rooms").on("click",()=>{
+        $("#recomended-room").fadeOut("fast")
+      })
+    })
+  </script>
 
     <?php
+  }else{
 
   }
   ?>
-</div>
-</section>
-<script type="text/javascript">
-  $(function(){
-    $("#recomended-room").css("border","1px solid #1E90FF")
-    $("#recomended-room").css("border-radius","5px")
-    $("#close-recomended-rooms").on("click",()=>{
-      $("#recomended-room").fadeOut("fast")
-    })
-  })
-</script>
+
   <?php
 
 } catch (PDOException $e) {
