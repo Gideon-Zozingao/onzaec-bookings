@@ -16,7 +16,8 @@ class db
   function  connect(){
     try{
       $con=new PDO("mysql:host=$this->host;dbname=$this->schema", $this->user, $this->password);
-      $con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
+      $con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+      
       return $con;
     }catch(PDOException $e){
       return  $e;

@@ -24,13 +24,14 @@ if(!isset($_SESSION['account'])&&($_SESSION['account'])!=="advanced"&&$_SESSION[
 	echo "Login to your property Accoun to have access to this section";
 die();
 }
-//echo "All Active Bookings";
-//echo $_SESSION['account_id']." ".$_SESSION['accountType'];
-$allActiveBookingsSql="SELECT *FROM bookings JOIN rooms ON bookings.roomId=rooms.roomId WHERE bookings.propertyId='$_SESSION[account_id]' AND bookings.reservationStatus='Cancelled'";
-$allActiveBookingQUery=mysqli_query($conn,$allActiveBookingsSql);
-if($allActiveBookingQUery==true){
-$allActiveBookingQUeryResults=mysqli_num_rows($allActiveBookingQUery);
-if($allActiveBookingQUeryResults>0){
+
+try {
+    $allActiveBookingsSql="SELECT *FROM bookings JOIN rooms ON bookings.roomId=rooms.roomId WHERE bookings.propertyId='$_SESSION[account_id]' AND bookings.reservationStatus='Cancelled'";
+
+  $allActiveBookingQUery=$conn->query($allActiveBookingsSql);
+  $allActiveBookingQUery->setFetchMode(PDO::FETCH_ASSOC);
+  $allActiveBookingQUeryResults=$allActiveBookingQUery->rowcount();
+  if($allActiveBookingQUeryResults>0){
   ?>
 <table class="table table-fluid table-striped">
 <thead>
@@ -47,7 +48,7 @@ if($allActiveBookingQUeryResults>0){
 </tr>
 
   <?php
-while($allActiveBookingQUeryResultsArray=mysqli_fetch_array($allActiveBookingQUery)){
+while($allActiveBookingQUeryResultsArray=$allActiveBookingQUery->fetch()){
   ?>
 
 <tr>
@@ -95,8 +96,9 @@ while($allActiveBookingQUeryResultsArray=mysqli_fetch_array($allActiveBookingQUe
 }else{
   echo $allActiveBookingQUeryResults." Active Bookings";
 }
-}else{
-  echo mysqli_error($conn);
+
+} catch (PDOException $e) {
+  echo $e->getMessage();
 }
 }
 else{

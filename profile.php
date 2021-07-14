@@ -14,8 +14,6 @@ if(isset($_SESSION['logedin'])&&$_SESSION['logedin']==true){
 ?>
 <meta name="robots" content="nofolow,noindex">
 <title><?php echo $page_tittle?></title>
-
-
 <?php include("views/layout-links.php") ?>
 </head>
 <body>
@@ -51,7 +49,6 @@ if(isset($_SESSION['logedin'])&&$_SESSION['logedin']==true){
     }
     ?>
   <div class="sidenav">
-
   <a href="/profile?action=redir&soft=activity-log">Activitis <span class="fa fa-home"></span></a>
   <a href="/profile?action=redir&soft=favProperties">Properties You Love</a>
   <a href="/profile?action=redir&soft=scores">Socres</a>
@@ -65,7 +62,7 @@ if(isset($_SESSION['logedin'])&&$_SESSION['logedin']==true){
       <div class="profile-heading row">
         <div class="col-md-4">
           <?php
-          if($myData["avata"]){?>
+          if($myData["avata"]!=""){?>
 
               <img src="users/user-photos/<?php echo$myData["avata"] ?> " alt="<?php echo $myData["name"] ." ".$myData["surname"]?> " class="img-responsive img-fluid" style="min-width:200px; min-height:200px; max-width:200px;min-height:100px;">
             <?php
@@ -84,7 +81,6 @@ if(isset($_SESSION['logedin'])&&$_SESSION['logedin']==true){
       <hr>
       <button type="button" class="btn btn-dark" id="avata" title="Change Avata"><span class="fa fa-camera"></span>    </button>
       <button type="button" class="btn btn-dark" id="profile-settings" title="Profile Settings"><span class="fa fa-cog" ></span>   </button>
-
     </div>
   </section>
   <section class="container">
@@ -96,7 +92,6 @@ if(isset($_SESSION['logedin'])&&$_SESSION['logedin']==true){
                 case 'settings':
                   ?>
                     <h2 class="text-primary">Profile Settings</h2>
-
                   <?php
                   include("users/profile-settings.php");
                   break;

@@ -130,14 +130,13 @@ $room->setavaialibiltyDate(date("Y-m-d"));
 $customerId=date("YmdHis");
 $reservationCode=rand(10000,20000);
 //find customer by Email
-
-$findCustomerByEmailSql="SELECT * FROM customers WHERE customerEmail='$_POST[custemail]'";
-$findCustomerByEmailQuery=mysqli_query($conn,$findCustomerByEmailSql);
-if($findCustomerByEmailQuery==true){
-  $findCustomerByEmailResult=mysqli_num_rows($findCustomerByEmailQuery);
-  //check if there is an existing customer
+try {
+  $findCustomerByEmailSql="SELECT * FROM customers WHERE customerEmail='$_POST[custemail]'";
+  $findCustomerByEmailQuery=$conn->query($findCustomerByEmailSql);
+  $findCustomerByEmailQuery->setFetchMode(PDO::FETCH_ASSOC);
+  $findCustomerByEmailResult=$findCustomerByEmailQuery->rowCount();
   if($findCustomerByEmailResult>0){
-     $findCustomerByEmailResultRows=mysqli_fetch_array($findCustomerByEmailQuery);
+     $findCustomerByEmailResultRows=$findCustomerByEmailQuery->fetch();
      //create bookings onnly using the user Id from the result as s the
      //customer UserId
      $booking=new Bookings($room->getRoomId(),$_POST["propertyId"],$reservationCode,date("Y-m-d"),$findCustomerByEmailResultRows['customerId']);
@@ -252,14 +251,17 @@ $alert["reseponese_note"]=" Encountered an Error while Performing Transaction wi
           die();
     }
   }
-}else{
-
+} catch (PDOException $e) {
   $alert["respose_type"]="error";
-  $alert["respose_message"]="Cannot Perform Your Transaction Now";
-  $alert["reseponese_note"]="Encountered an error while Processing Your Personal Information";
-  echo(json_encode($alert));
-  die();
+  $alert["respose_message"]=$e->getMessage();
+  $alert["reseponese_note"]="Encountered an Error while Regsitering Personal Information ";
+      echo(json_encode($alert));
+      die();
+  
 }
+
+
+
     break;
       case 'GET':
         break;

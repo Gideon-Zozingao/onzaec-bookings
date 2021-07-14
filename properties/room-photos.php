@@ -34,6 +34,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
   ?>
 
 <div class="card" id="form-card">
+
   <div class="card-body">
     <div class="" id="uploadImagePreview">
     </div>
@@ -73,20 +74,37 @@ switch ($_SERVER['REQUEST_METHOD']) {
           },
           success:function(data){
             var JSONdata=JSON.parse(data)
+             $("#respose").html("");
             if(JSONdata.response_type=="success"){
+              alert("Success")
+              $("#roomPhotoUploadForm")[0].reset();
               setTimeout(()=>{
-                $("#respose").html(`<div class="col-md-4 offset-4"><span></span class="alert alert-success text-success">${JSONdata.response_message}</div>`)
+               
+
+                $("#modal-top-body").html(`<span class='text-center text-succes'>   ${JSONdata.response_message}</span>`)
+
+                $("#modal-top").fadeIn("slow");
+                
               },1500)
+              
               setTimeout(()=>{
                 $("#respose").html("")
+                $("#modal-top").fadeOut("slow");
+
                 $("#imageDisplay").load("properties/room-photos.php?roomID=<?php echo $_GET['roomID']?>&viewLink=roomPhotosLink")
-                //$("#modal").fadeIn("slow")
-              },200)
+
+              },3000)
 
             }else{
+              alert("Error")
               setTimeout(()=>{
-                $("#respose").html(`<div class="col-md-4 offset-4"><span></span class="alert alert-danger text-danger">${JSONdata.response_message}</div>`)
+               
+                $("#modal-top-body").html(`<span class="text-danger>${JSONdata.response_message}</span ">`)
+                $("#modal-top").fadeIn("slow");
               },1500)
+              setTimeout(()=>{
+                $("#modal-top").fadeOut("slow");
+              },3000)
             }
 
           }
@@ -252,11 +270,12 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
         break;
         case 'roomPhotosLink':
-          // code...
+
+        try {
           $selectRoomPhoto="SELECT * FROM rooms JOIN roomphotos ON rooms.roomId=roomphotos.roomId WHERE roomphotos.roomId='$_GET[roomID]'";
-          $selectRoomPhotoQuery=mysqli_query($conn,$selectRoomPhoto);
-          if($selectRoomPhotoQuery==true){
-            $selectRoomPhotoQueryResults=mysqli_num_rows($selectRoomPhotoQuery);
+          $selectRoomPhotoQuery=$conn->query($selectRoomPhoto);
+          $selectRoomPhotoQuery->setFetchMode(PDO::FETCH_ASSOC);
+          $selectRoomPhotoQueryResults= $selectRoomPhotoQuery->rowCount();
 
 
             if($selectRoomPhotoQueryResults>0){
@@ -264,7 +283,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
                 <div class="row ">
               <?php
-              while($ResultsArray=mysqli_fetch_array($selectRoomPhotoQuery)){
+              while($ResultsArray=$selectRoomPhotoQuery->fetch()){
                 ?>
                 <div class=" col-md-4">
                 <img src="public/gallery/images/<?php echo $ResultsArray["photoName"]?>" class="img-fluid img-responsive" alt="<?php echo $ResultsArray['photoAltText']?>">
@@ -313,12 +332,13 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 })
               })
             </script>
+<?php
 
-
-            <?php
-          }else{
-            echo "Error ".mysqli_error($conn);
-          }
+        } catch (Exception $e) {
+          echo $e->getMessage();
+        }
+          // code...
+          
           break;
       default:
         // code...
@@ -327,13 +347,14 @@ switch ($_SERVER['REQUEST_METHOD']) {
   }
     // code...
 if(isset($_GET["roomId"])){
-  $selectRoomCoverPhoto="SELECT * FROM rooms WHERE roomId='$_GET[roomId]'";
-  $selectRoomCoverPhotoQuery=mysqli_query($conn,$selectRoomCoverPhoto);
-  if($selectRoomCoverPhotoQuery==true){
-  $selectRoomCoverPhotoQueryResults=mysqli_num_rows($selectRoomCoverPhotoQuery);
 
-  if($selectRoomCoverPhotoQueryResults>0){
-  $ResultsArray=mysqli_fetch_array($selectRoomCoverPhotoQuery);
+  try {
+    $selectRoomCoverPhoto="SELECT * FROM rooms WHERE roomId='$_GET[roomId]'";
+  $selectRoomCoverPhotoQuery=$conn->query($selectRoomCoverPhoto);
+  $selectRoomCoverPhotoQuery->setFetchMode(PDO::FETCH_ASSOC);
+  $selectRoomCoverPhotoQueryResults=$selectRoomCoverPhotoQuery->rowCount();
+if($selectRoomCoverPhotoQueryResults>0){
+  $ResultsArray=$selectRoomCoverPhotoQuery->fetch();
   ?>
   <a href="" id="coverPhotoLink" >Cover Photo</a> | <a href=""  id="roomPhotosLink" >Room Photos</a>
   <hr>
@@ -388,13 +409,10 @@ if(isset($_GET["roomId"])){
   <h3 class="text-center text-muted">The information about this room no longer exist</h3>
     <?php
   }
-
-  }else{
-    ?>
-  <h3 class="text-muted text-center">Cannot acces this room's photos</h3>
-  <p class="text-muted text-center">Application Error</p>
-    <?php
+  } catch (Exception $e) {
+    echo $e->getMessage();
   }
+  
       ?>
       <?php
 }
@@ -409,9 +427,7 @@ if(isset($_GET["roomId"])){
 
           //allowed immage files
           $validExtensions = Array("jpeg", "jpg", "png");
-
           if($_FILES['roomPhoto']['name']==""){
-
             $response["response_type"]="error";
             $response["response_message"]="No Image file Inserted";
             $response["response_note"]="Please Inserted an Image submit the Form again";
@@ -425,8 +441,7 @@ if(isset($_GET["roomId"])){
             $response["response_message"]=end($temp)." file is not allowed";
             $response["response_note"]="Please upload  a valid Image File [jpg,jpeg  or  PNG file]";
             die(json_encode($response));
-            die();
-
+            
           }
           //rename the image
           $newFileName="ONZAEC-IMG".date("YmdHis").round(microtime(true)).".".end($temp);
@@ -446,25 +461,33 @@ if(isset($_GET["roomId"])){
           $photoId=date("YmdHis");
           $creationDate=date("Y-m-d");
 
-
-          //register photo information to the Database
+try {
           $sql="INSERT INTO roomPhotos VALUES('$photoId','$newFileName','$_POST[roomId]','','$creationDate')";
-          $query=mysqli_query($conn,$sql);
-          if($query==true){
-            $response["response_type"]="success";
+          $query=$conn->query($sql);
+          $count=$query->rowCount();
+          if($count>0){
             $response["response_message"]="Photo Uloade Successfully";
             //$response["response_note"]="Unable to Upload File";
             echo(json_encode($response));
             die();
           }else{
             $response["response_type"]="error";
-            $response["response_message"]="Photo Uloade Ussucessful";
-            $response["response_note"]="Application Error ".mysqli_error($conn);
+            $response["response_message"]="Photo Uloade Unsucessful";
+            $response["response_note"]="Application Error ";
             echo(json_encode($response));
-            die();
           }
-        }
 
+  
+} catch (Exception $e) {
+            $response["response_type"]="error";
+            $response["response_message"]=$e->getMessage();
+            $response["response_note"]="Application Error ";
+            echo(json_encode($response));
+  
+}
+          //register photo information to the Database
+ 
+}
       break;
 
   default:

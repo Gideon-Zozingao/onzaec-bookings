@@ -37,14 +37,14 @@ die();
 switch ($_SERVER['REQUEST_METHOD']) {
   case 'GET':
   if(isset($_GET["recalcBill"])&&isset($_GET["newDate"])){
-    //echo $_GET["recalcBill"];
-    //echo $_GET["newDate"];
-    $getBookingInfo="SELECT *FROM  bookings JOIN rooms ON bookings.roomId=rooms.roomId WHERE bookings.bookingId='$_GET[recalcBill]'";
-    $getBookingInfoQuery=mysqli_query($conn,$getBookingInfo);
-    if($getBookingInfoQuery==true){
-      $getBookingInfoResults=mysqli_num_rows($getBookingInfoQuery);
-      if($getBookingInfoResults>0){
-          $getBookingInfoArray=mysqli_fetch_array($getBookingInfoQuery);
+    try {
+      $getBookingInfo="SELECT *FROM  bookings JOIN rooms ON bookings.roomId=rooms.roomId WHERE bookings.bookingId='$_GET[recalcBill]'";
+          $getBookingInfoQuery=$conn->query($getBookingInfo);
+          $getBookingInfoQuery->setFetchMode(PDO::FETCH_ASSOC);
+          $getBookingInfoResults=$getBookingInfoQuery->rowCount();
+
+          if($getBookingInfoResults>0){
+          $getBookingInfoArray=$getBookingInfoQuery->fetch();
           //echo $getBookingInfoArray['bookingId'];
           $newBill=dateDiff($getBookingInfoArray['checkInDate'],$_GET["newDate"])*$getBookingInfoArray['price'];
           ?>
@@ -152,9 +152,12 @@ switch ($_SERVER['REQUEST_METHOD']) {
   }else{
     echo "Informaiton for this reservation is no Longer Available";
   }
-}else{
-  echo "Unable to your request ";
-}
+      
+    } catch (PDOException $e) {
+      echo $e->getMessage();
+    }
+    
+    
 }
 
 
@@ -210,12 +213,14 @@ if(isset($_GET['deleteThis'])){
   <?php
 }
   if(isset($_GET['actFor'])&&isset($_GET['action'])){
-    $getBookingInfo="SELECT *FROM  bookings JOIN rooms ON bookings.roomId=rooms.roomId WHERE bookings.bookingId='$_GET[actFor]'";
-    $getBookingInfoQuery=mysqli_query($conn,$getBookingInfo);
-    if($getBookingInfoQuery==true){
-      $getBookingInfoResults=mysqli_num_rows($getBookingInfoQuery);
+    try {
+      
+      $getBookingInfo="SELECT *FROM  bookings JOIN rooms ON bookings.roomId=rooms.roomId WHERE bookings.bookingId='$_GET[actFor]'";
+      $getBookingInfoQuery=$conn->query($getBookingInfo);
+      $getBookingInfoQuery->setFetchMode(PDO::FETCH_ASSOC);
+      $getBookingInfoResults=$getBookingInfoQuery->rowCount();
       if($getBookingInfoResults>0){
-          $getBookingInfoArray=mysqli_fetch_array($getBookingInfoQuery);
+          $getBookingInfoArray=$getBookingInfoQuery->fetch();
           switch ($_GET['action']) {
             case 'Checked Out':
             ?>
@@ -289,9 +294,9 @@ if(isset($_GET['deleteThis'])){
                       url:"properties/bookings-take-action",
                       type:"POST",
                       data:new FormData(this),
-              				contentType:false,
-              				cache:false,
-              				processData:false,
+                      contentType:false,
+                      cache:false,
+                      processData:false,
                       beforeSend:function(){
                         $("#checkOutPane").html("<div class='col-md-4 offset-4'><img src='public/images/loading.gif'></div>")
                       },
@@ -349,9 +354,9 @@ if(isset($_GET['deleteThis'])){
                         url:"properties/bookings-take-action",
                         type:"POST",
                         data:new FormData(this),
-                				contentType:false,
-                				cache:false,
-                				processData:false,
+                        contentType:false,
+                        cache:false,
+                        processData:false,
                         beforeSend:function(){
                           $("#checkInConfirmation").html("<div class='col-md-4 offset-4'><img src='public/images/loading.gif'></div>")
                         },
@@ -459,18 +464,23 @@ if(isset($_GET['deleteThis'])){
       }else{
         echo "Th result for this reservation is no Longer available";
       }
-    }else{
-      echo " Cannot Process Your request Now";
+
+
+    } catch (PDOException $e) {
+        echo $e->getMessage();
     }
+    
   }
 
     if(isset($_GET['actionThisBooking'])){
-      $getBookingInfo="SELECT *FROM  bookings JOIN rooms ON bookings.roomId=rooms.roomId WHERE bookings.bookingId='$_GET[actionThisBooking]'";
-      $getBookingInfoQuery=mysqli_query($conn,$getBookingInfo);
-      if($getBookingInfoQuery==true){
-        $getBookingInfoResults=mysqli_num_rows($getBookingInfoQuery);
+      try {
+          $getBookingInfo="SELECT *FROM  bookings JOIN rooms ON bookings.roomId=rooms.roomId WHERE bookings.bookingId='$_GET[actionThisBooking]'";
+        $getBookingInfoQuery=$conn->query($getBookingInfo);
+        $getBookingInfoQuery->setFetchMode(PDO::FETCH_ASSOC);
+        $getBookingInfoResults=$getBookingInfoQuery->rowCount();
+
         if($getBookingInfoResults>0){
-            $getBookingInfoArray=mysqli_fetch_array($getBookingInfoQuery);
+            $getBookingInfoArray=$getBookingInfoQuery->fetch();
             ?>
             <div class="col-md-6 offset-3">
                 <input type="hidden" name="bookingsId" value="<?php echo $_GET['actionThisBooking']?>" id="bookingId">
@@ -524,11 +534,10 @@ if(isset($_GET['deleteThis'])){
           }else{
               echo "This information is o longer available";
             }
-          }else{
-          echo "Connection Failed";
-          die();
-            }
-      die();
+
+      } catch (PDOException $e) {
+        echo $e->getMessage() ;
+      }
     }
     break;
 
@@ -642,7 +651,6 @@ if($_POST["reservationComment"]!=""){
         if($checkout==true){
           $response['response_type']="success";
           $response["response_message"]="Checked Out Successfully";
-
           echo (json_encode($response));
           die();
         }else{
@@ -656,22 +664,32 @@ if($_POST["reservationComment"]!=""){
 
     //recive and precess the delet booking form submission
     if(isset($_POST["deleteBooking"])){
-      $deletBookingSql="DELETE FROM bookings WHERE bookingId='$_POST[deleteBooking]'";
-      $deletBookingQuery=mysqli_query($conn,$deletBookingSql);
-      if($deletBookingQuery==true){
-        $response['response_type']="success";
+      try {
+          $deletBookingSql="DELETE FROM bookings WHERE bookingId='$_POST[deleteBooking]'";
+        $deletBookingQuery=$conn->prepare($deletBookingSql);
+        $deletBookingQuery->execute();
+        $count=$deletBookingQuery->rowCount();
+        if($count>0){
+          $response['response_type']="success";
         $response['response_message']="Reservation Deleted Succesfully";
         $response["response_note"]="";
         echo (json_encode($response));
+        }else{
+          $response['response_type']="error";
+        $response['response_message']="Reservation Not deleted";
+        $response["response_note"]="Technical Error";
+        echo(json_encode($response));
         die();
-      }else{
+        }
+        
+      } catch (PDOException $e) {
+        
         $response['response_type']="error";
         $response['response_message']="Cannot Delete The reservation";
         $response["response_note"]="Technical Error";
         echo(json_encode($response));
         die();
       }
-
     }
 
     //preocessin Booking Confirmation Form Submision

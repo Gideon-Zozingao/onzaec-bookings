@@ -121,41 +121,58 @@ class Room{
       return $this->propertyId;
   }
   public  function  addRoom($conn){
-    $q="INSERT  INTO  rooms (roomId,roomName,roomCategory, 	FloorNumber,roomCapacity,numberOfBed,bedSize,facilitiesl, 	price,tax,availabilityStatus,avaialibiltyDate,roomDescription,publoicationStatus,roomCoverPhoto,propertyId)  VALUES('$this->roomId',
-      '$this->roomName','$this->roomCategory','$this->FloorNumber','$this->roomCapacity', '$this->numberOfBed','$this->bedSize','$this->facilities','$this->price','$this->tax','$this->availabilityStatus','$this->avaialibiltyDate','$this->roomDescription','$this->pubblicationStatus','$this->roomCoverPhoto',
-      '$this->propertyId')";
-      $exec=mysqli_query($conn,$q);
-      if($exec){
-        return  true;
-      }else{
-        return  FALSE;
+
+      try {
+        $q="INSERT  INTO  rooms (roomId,roomName,roomCategory, 	FloorNumber,roomCapacity,numberOfBed,bedSize,facilitiesl, 	price,tax,availabilityStatus,avaialibiltyDate,roomDescription,publoicationStatus,roomCoverPhoto,propertyId)  VALUES('$this->roomId',
+          '$this->roomName','$this->roomCategory','$this->FloorNumber','$this->roomCapacity', '$this->numberOfBed','$this->bedSize','$this->facilities','$this->price','$this->tax','$this->availabilityStatus','$this->avaialibiltyDate','$this->roomDescription','$this->pubblicationStatus','$this->roomCoverPhoto',
+          '$this->propertyId')";
+
+        $exec=$conn->prepare($q);
+        $exec->execute();
+        $affected=$exec->rowCOunt();
+        if($affected>0){
+          return true;
+        }else{
+          return 0;
+        }
+      } catch (PDOException $e) {
+        return FALSE;
       }
   }
 
 public  function  getThisPropsRooms($conn){
   $q="SELECT*FROM rooms WHERE propertyId='$this->propertyId'";
-  $query=mysqli_query($conn,$q);
-if($query==true){
-$results=mysqli_num_rows($query);
-if($results>0){
-  $rows=mysqli_fetch_array($query);
-  return  $rows;
-}else{
-    return  0;
+  try {
+    $query=$conn->query($q);
+    $query->setFetchMode(PDO::FETCH_ASSOC);
+    $results=$query->rowCount();
+    if($results>0){
+      $rows=$query->fetch();
+      return  $rows;
+    }else{
+        return  0;
+    }
+  } catch (PDOException $e) {
+      return FALSE;
+  }
 }
-}else{
-  return  FALSE;
-}
-}
+
 public function updateAvailablityStatus($conn){
-  $sql="UPDATE rooms SET availabilityStatus='$this->availabilityStatus',avaialibiltyDate='$this->avaialibiltyDate'
-   WHERE roomId='$this->roomId'";
-  $query=mysqli_query($conn,$sql);
-  if($query==true){
-    return true;
-  }else{
+  try {
+    $sql="UPDATE rooms SET availabilityStatus='$this->availabilityStatus',avaialibiltyDate='$this->avaialibiltyDate'
+     WHERE roomId='$this->roomId'";
+     $query=$conn->prepare($sql);
+     $query->execute();
+     $affected=$query->rowCount();
+     if($affected>0){
+       return true;
+     }else{
+       return FALSE;
+     }
+  } catch (PDOException $e) {
     return FALSE;
   }
+
 }
 }
 

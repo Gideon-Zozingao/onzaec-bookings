@@ -22,24 +22,28 @@ switch ($_SERVER["REQUEST_METHOD"]) {
   case 'GET':
 if(isset($_GET["notifsBookingId"])){
 
-  //  make a call to the database for  details of the booking made
-  $bookingDetailSql="SELECT *FROM  bookings JOIN rooms ON rooms.roomId=bookings.roomId WHERE bookings.bookingId='$_GET[notifsBookingId]'";
-  $bookingDetailQuery=mysqli_query($conn,$bookingDetailSql);
-  if($bookingDetailQuery==true){
-    $bookingDetailQueryReuslts=mysqli_num_rows($bookingDetailQuery);
+
+try {
+    $bookingDetailSql="SELECT *FROM  bookings JOIN rooms ON rooms.roomId=bookings.roomId WHERE bookings.bookingId='$_GET[notifsBookingId]'";
+    $bookingDetailQuery=$conn->query($bookingDetailSql);
+    $bookingDetailQuery->setFetchMode(PDO::FETCH_ASSOC);
+    $bookingDetailQueryReuslts=$bookingDetailQuery->rowCount();
+
     if($bookingDetailQueryReuslts>0){
       //store the query Resut in An array
-      $bookingDetailQueryReusltsArray=mysqli_fetch_array($bookingDetailQuery);
+      $bookingDetailQueryReusltsArray=$bookingDetailQuery->fetch();
 
       //call the database for cusdtomer information related  this booking
       $customerSql="SELECT *FROM customers WHERE customerId='$bookingDetailQueryReusltsArray[customerId]'";
-      $customerQuery=mysqli_query($conn,$customerSql);
-      if($customerQuery==true){
-        $customerQueryResult=mysqli_num_rows($customerQuery);
+          $customerQuery=$conn->query($customerSql);
+         $customerQuery->setFetchMode(PDO::FETCH_ASSOC);
+         $customerQueryResult=$customerQuery->rowCount();
+
+      
         //chaeck if any customer data relate dto this Booking is Present
       if($customerQueryResult>0){
         //store the customer data in an Array
-          $customerQueryResultArray=mysqli_fetch_array($customerQuery);
+          $customerQueryResultArray=$customerQuery->fetch();
           ?>
           <div class="card">
       <div class="card-body">
@@ -70,23 +74,22 @@ if(isset($_GET["notifsBookingId"])){
 
           //update the Notification Status
           $notifictionSeetSql="UPDATE bookings SET reservationNoticeSeen='Yes' WHERE bookingId='$_GET[notifsBookingId]'";
-          $notifictionSeetQuery=mysqli_query($conn,$notifictionSeetSql);
-          if($notifictionSeetQuery==true){
-            echo "Notification View";
+          $notifictionSeetQuery=$conn->prepare($notifictionSeetSql);
+          $notifictionSeetQuery->execute();
+          $countIt=$notifictionSeetQuery->rowCount();
+          if($countIt>0){
+            echo "";
           }else{
-            echo mysqli_error($conn);
+            echo "Error";
           }
 
       }else{
           echo "Cusomer Data Not available";
       }
-    }else{
-          echo mysqli_error($customerQuery);
-
     }
 
 
-    }else{
+    else{
       ?>
 <div class="text-muted text-center">
   <h5><?php  echo "Booking Information is Not Presetn at the Moment";?></h5>
@@ -94,12 +97,12 @@ if(isset($_GET["notifsBookingId"])){
       <?php
 
     }
-  }else{
-    echo mysqli_error($conn);
-    die();
-  }
 
-  die();
+  
+} catch (PDOException $e) {
+    echo $e->getMessage();
+}
+  //  make a call to the database for  details of the booking made
 }
     break;
     case 'POST':

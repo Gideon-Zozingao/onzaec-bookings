@@ -10,7 +10,8 @@ if(isset($_SESSION['logedin'])){
   $conn=$thisdb->connect();
   $me=new User();
   $me->setUserId($_SESSION['id']);
-  if($conn){
+
+  if($conn==true){
   $myData=$me->viewUSer($conn);
   if($myData==FALSE){
     die("User  Data Not Present");
@@ -28,7 +29,7 @@ if(isset($_SESSION['logedin'])){
             <img src="../users/user-photos/<?php  echo $myData['avata'] ?> " alt="<?php  echo $myData['name']." ".$myData['surname']?>" class="img-fluid img-responsive" id="userAvata">
             <?php
           }else{?>
-            <img src="user-photos/default.jpg " alt="<?php  echo $myData['name']." ".$myData['surname']?>" class="img-fluid img-responsive" id="userAvata">
+            <img src="users/user-photos/default.jpg " alt="<?php  echo $myData['name']." ".$myData['surname']?>" class="img-fluid img-responsive" id="userAvata">
             <?php
           }
             ?>

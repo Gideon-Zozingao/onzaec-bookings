@@ -53,12 +53,13 @@ public function gteAccountStatus (){
 }
 
 public function createAccount($conection){
-  $sql="INSERT INTO user_accounts
-    VALUES('$this->accId','$this->accountName','$this->accountType','$this->userType','$this->accoutOwnerId','$this->registrationDate','$this->accountStatus')";
-    
     try {
+      $sql="INSERT INTO user_accounts
+    VALUES('$this->accId','$this->accountName','$this->accountType','$this->userType','$this->accoutOwnerId','$this->registrationDate','$this->accountStatus')";
+
       $query=$conection->prepare($sql);
       $query->execute();
+
       if($query->rowCount()>0){
         return true;
       }else{
@@ -71,10 +72,12 @@ public function createAccount($conection){
 
 
 public function getUserAounts($connection){
-  $q="SELECT * FROM user_accounts WHERE accoutOwnerId=$this->accoutOwnerId";
   try {
+
+    $q="SELECT * FROM user_accounts WHERE accoutOwnerId=$this->accoutOwnerId";
       $query=$connection->query($q);
       $count=$query->rowCount();
+      
       if($count>0){
         $query->setFetchMode(PDO::FETCH_ASSOC);
         $row=$query->fetch();
@@ -86,7 +89,6 @@ public function getUserAounts($connection){
   } catch (PDOException $e) {
       return FALSE;
   }
-
 }
 }
 ?>

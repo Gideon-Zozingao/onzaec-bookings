@@ -2,17 +2,7 @@
 
 <?php
 session_start();
-//use the configuration file  and file virables
-// function dateDiff($date1,$date2){
-//
-// //change the date string to timestamps and  take the difference of the later and previous date
-//   $diff=strtotime($date2)-strtotime($date1);
-//   //1 day=24hours
-//   //24*60*60=86400  seconds
-//
-//   return(abs(round($diff/(24*60*60))));
-//
-// }
+
 include("../controllers/config.php");
 //use the db class and db connection functions
 include("../controllers/classes/db-class.php");
@@ -33,11 +23,12 @@ if(!isset($_SESSION["logedin"])){
   die();
 }
 if(isset($_SESSION['logedin'])&&isset($_SESSION['account'])&&$_SESSION['accountType']==="propertyacc"){
-$roomslq="SELECT  * FROM  rooms WHERE propertyId='$_SESSION[account_id]' AND publoicationStatus<>'Published'";
-$roomQuery=mysqli_query($conn,$roomslq);
-if($roomQuery==true){
-$results=mysqli_num_rows($roomQuery);
-if($results>0){?>
+  try {
+    $roomslq="SELECT  * FROM  rooms WHERE propertyId='$_SESSION[account_id]' AND publoicationStatus<>'Published'";
+      $roomQuery=$conn->query($roomslq);
+      $roomQuery->setFetchMode(PDO::FETCH_ASSOC);
+      $results=$roomQuery->rowCount();
+      if($results>0){?>
 
 
               <table class="table table-striped">
@@ -58,7 +49,7 @@ if($results>0){?>
 
               <div class="row">
   <?php
-while($roomRows=mysqli_fetch_array($roomQuery)){
+while($roomRows=$roomQuery->fetch()){
   ?>
 <tr>
   <td><a href="?action=view&page=rooms&room=<?php echo$roomRows['roomId']?>"><?php echo$roomRows['roomName']?></a> </td>
@@ -121,7 +112,7 @@ for(let i=0;i<checkinLink.length;i++){
     })
   })
 }
-console.log(checkinLink)
+///console.log(checkinLink)
 
 
 
@@ -193,15 +184,15 @@ console.log(checkinLink)
   <br>
 <section class="">
 
-  <h3 class="text-muted">No Rooms availabel for this site
-  your site</h3>
+  <h5 class="text-muted text-center">No Rooms available at this section</h5>
 
 </section>
   <?php
 }
-}else{
-  die("Error: ".mysqli_error($conn));
-}
+    
+  } catch (PDOException $e) {
+    
+  }
 
 }else{
 die("Unknow Error");

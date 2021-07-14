@@ -1,4 +1,4 @@
-<?php
+   <?php
 include("../controllers/config.php");
 include('../controllers/classes/db-class.php');
 session_start();
@@ -18,12 +18,14 @@ if(!isset($_SESSION['account'])&&($_SESSION['account'])!=="advanced"){
 switch ($_SERVER["REQUEST_METHOD"]) {
   case 'GET':
   if(isset($_GET['roomid'])){
-    $roomInfoSql="SELECT * FROM rooms WHERE roomId='$_GET[roomid]'";
-    $roomdetailsQuery=mysqli_query($conn,$roomInfoSql);
-    if($roomdetailsQuery==true){
-      $roomresult=mysqli_num_rows($roomdetailsQuery);
+    try {
+      $roomInfoSql="SELECT * FROM rooms WHERE roomId='$_GET[roomid]'";
+      $roomdetailsQuery=$conn->query($roomInfoSql);
+      $roomdetailsQuery->setFetchMode(PDO::FETCH_ASSOC);
+      $roomresult=$roomdetailsQuery->rowCount();
+
       if($roomresult>0){
-        $room_array=mysqli_fetch_array($roomdetailsQuery);
+        $room_array=$roomdetailsQuery->fetch();
 
 if($room_array['propertyId']!=$_SESSION['account_id']){
 ?>
@@ -98,9 +100,11 @@ if($room_array['propertyId']!=$_SESSION['account_id']){
       }else{
         echo "The room is Not Available.";
       }
-    }else{
-      echo "Cannot Process Your data Due to Some technical Faults<br>".mysqli_error($conn);
+
+    } catch (PDOException $e) {
+      echo $e->getMessage();
     }
+     
   }else if(isset($_GET['deleteRoom'])){
     ?>
     <div class="row">

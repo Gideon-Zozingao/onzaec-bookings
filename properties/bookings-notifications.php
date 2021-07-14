@@ -30,20 +30,21 @@ die();
 switch ($_SERVER['REQUEST_METHOD']) {
   case 'GET':
   if(isset($_GET['viewList'])){
-    $sql="SELECT * FROM bookings  JOIN rooms on bookings.roomId=rooms.roomId WHERE bookings.propertyId='$_SESSION[account_id]' and reservationNoticeSeen='No'";
-    $query=mysqli_query($conn,$sql);
-    if($query==true){
-    $queryResults=mysqli_num_rows($query);
-    ?>
+
+    try {
+      $sql="SELECT * FROM bookings  JOIN rooms on bookings.roomId=rooms.roomId WHERE bookings.propertyId='$_SESSION[account_id]' and reservationNoticeSeen='No'";
+        
+        $query=$conn->query($sql);
+        $query->setFetchMode(PDO::FETCH_ASSOC);
+       $queryResults=$query->rowCount();
+       
+    if($queryResults>0){
+      ?>
 <div class="container">
 
 
     <?php
-    if($queryResults>0){
-      ?>
-
-      <?php
-      while($queryResultsArray=mysqli_fetch_array($query)){
+      while($queryResultsArray=$query->fetch()){
         ?><div class="card">
 <div class="card-body">
 
@@ -85,18 +86,20 @@ switch ($_SERVER['REQUEST_METHOD']) {
 </div>
       <?php
     }else{
-      echo "O New Notification";
+      echo "";
+    }
+
+    } catch (PDOException $e) {
+      
     }
   }else{
-    echo mysqli_error($conn);
-  }
-  }else{
-
-    $sql="SELECT * FROM bookings WHERE propertyId='$_SESSION[account_id]' and reservationNoticeSeen='No'";
-    $query=mysqli_query($conn,$sql);
-    if($query==true){
-    $queryResuls=mysqli_num_rows($query);
-    if($queryResuls>0){
+      try {
+          $sql="SELECT * FROM bookings WHERE propertyId='$_SESSION[account_id]' and reservationNoticeSeen='No'";
+          
+          $query=$conn->query($sql);
+          $query->setFetchMode(PDO::FETCH_ASSOC);
+          $queryResuls=$query->rowCount();
+          if($queryResuls>0){
       ?>
     <a href="account?action=view&page=booking.notification" id="bookingNotification"><?php echo $queryResuls ." New ";if($queryResuls===1){
       echo "Reservation";
@@ -138,9 +141,11 @@ switch ($_SERVER['REQUEST_METHOD']) {
       <?php
       ///echo "O Notifications";
     }
-    }else{
-      echo "Connection Failded!".mysqli_error($conn);
-    }
+
+      } catch (PDOException $e) {
+        echo $e->getMessage();
+        
+      }
   }
     // code...
     break;

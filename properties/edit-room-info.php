@@ -18,13 +18,13 @@ if(!isset($_SESSION['account'])&&($_SESSION['account'])!=="advanced"){
 switch ($_SERVER["REQUEST_METHOD"]) {
   case 'GET':
 if(isset($_GET["roomId"])){
-    //echo $_GET["roomId"];
+  try {
     $sql="SELECT*FROM rooms WHERE roomId='$_GET[roomId]'";
-    $query=mysqli_query($conn,$sql);
-    if($query==true){
-        $rooms=mysqli_num_rows($query);
-        if($rooms>0){
-            $room_array=mysqli_fetch_array($query);
+    $query=$conn->query($sql);
+    $query->setFetchMode(PDO::FETCH_ASSOC);
+    $rooms=$query->rowCount();
+    if($rooms>0){
+            $room_array=$query->fetch();
             ?>
             <div class="card" id="form-card">
               <div class="card-header">
@@ -114,30 +114,35 @@ if(isset($_GET["roomId"])){
                   $.ajax({
                     url:"properties/edit-room-info.php",
                     type:"POST",
-            				data:new FormData(this),
-            				contentType:false,
-            				cache:false,
-            				processData:false,
+                    data:new FormData(this),
+                    contentType:false,
+                    cache:false,
+                    processData:false,
                      beforeSend:function(){
                        $("#processing").html("<div class='row'><div class='col-md-4'></div><div class='col-md-4'><img src='public/images/loading.gif'></div><div class='col-md-4'></div></div>")
                     },
                     success:function(data){
                       var realData=JSON.parse(data)
+                      
                       if(realData.alert_type==="success"){
                         setTimeout(()=>{
-                          $("#processing").html(`<div class='row'><div class='col-md-2'></div><div class='col-md-8'><span class='alert alert-success'>${realData.message}</span><div class='col-md-2'></div></div>`).show();
+                          $("#processing").html("");
+                          $("#modal-top-body").html(`<div class='row'><div class='col-md-2'></div><div class='col-md-8'><span class='text-success'>${realData.message}</span><div class='col-md-2'></div></div>`)
+                          $("#modal-top").fadeIn("slow");
                         },2000)
                         setTimeout(()=>{
-                          $("#processing").fadeOut("slow");
+                          $("#modal-top").fadeOut("slow");
                           $("#modal-content").fadeOut("slow")
                           window.location.replace("")
                         },3000)
                       }else{
                         setTimeout(()=>{
-                          $("#processing").html(`<div class='row'><div class='col-md-2'></div><div class='col-md-8'><span class='alert alert-danger'>${realData.message}</span><div class='col-md-2'></div></div>`).show();
-                        },2000)
+                          $("#processing").html("");
+                          $("#modal-top-body").html(`<div class='row'><div class='col-md-2'></div><div class='col-md-8'><span class='text-danger'>${realData.message}</span><div class='col-md-2'></div></div>`);
+                          $("#modal-top").fadeIn("slow")
+                        },1500)
                         setTimeout(()=>{
-                          $("#processing").fadeOut("slow");
+                          $("#modal-top").fadeOut("slow");
                         },3000)
                       }
                     },
@@ -152,9 +157,12 @@ if(isset($_GET["roomId"])){
         }else{
             echo "Information for this room is Not available";
         }
-    }else{
-        echo "Cannot Access the room Information due to some rechnical Faults ";
-    }
+
+  } catch (PDOException $e) {
+    echo $e->getMessage();
+  }
+    //echo $_GET["roomId"];
+    
 }else{
   echo "Request Data is Not Properly Submited";
 }
@@ -172,24 +180,32 @@ if(isset($_GET["roomId"])){
               die(json_encode($alert));
           }
 
-        $editRoomSql="UPDATE rooms SET roomname='$_POST[roomname]',roomCategory='$_POST[roomCategory]',FloorNumber='$_POST[floorNummber]',numberOfBed='$_POST[beds]',bedSize='$_POST[bedsizes]',facilitiesl='$_POST[amenities]',publoicationStatus='$_POST[publicationStatus]', price='$_POST[rate]',roomDescription='$_POST[roomDescription]',roomCapacity='$_POST[capacity]' WHERE roomId='$_POST[roomId]'";
+              try {
+                $editRoomSql="UPDATE rooms SET roomname='$_POST[roomname]',roomCategory='$_POST[roomCategory]',FloorNumber='$_POST[floorNummber]',numberOfBed='$_POST[beds]',bedSize='$_POST[bedsizes]',facilitiesl='$_POST[amenities]',publoicationStatus='$_POST[publicationStatus]', price='$_POST[rate]',roomDescription='$_POST[roomDescription]',roomCapacity='$_POST[capacity]' WHERE roomId='$_POST[roomId]'";
 
-          $editRoomQUery=mysqli_query($conn,$editRoomSql);
+                      $editRoomQUery=$conn->query($editRoomSql);
+                      //$editRoomQUery->execute();
+                      $count=$editRoomQUery->rowCount();
+                      if($count>0){
+                        $alert["alert_type"]="success";
+                        $alert["message"]="Room Information Updated Successfully";
+                      die(json_encode($alert));
+                      }else{
+                        $alert["alert_type"]="error";
+                       $alert["message"]="Room Infomation Update failed ";
+                        die(json_encode($alert));
+                      }
 
-          if($editRoomQUery==true){
-          $alert["alert_type"]="success";
-          $alert["message"]="Room Iformation Updated Successfully";
-            die(json_encode($alert));
-        }else{
-          $alert["alert_type"]="error";
-          $alert["message"]="Room Infoamtin Update failed ".mysqli_error($conn);
-            die(json_encode($alert));
-        }
+              } catch (PDOException $e) {
+                $alert["alert_type"]="error";
+                $alert["message"]="Room Information Not Updated";
+                die(json_encode($alert));
+              }
     }else{
-      $alert["alert_type"]="error";
-      $alert["message"]="Incomplete form Data Submited";
-      //$alert=Array("alert_typ"=>"","message"=>"");
-        die(json_encode($alert));
+          $alert["alert_type"]="error";
+          $alert["message"]="Incomplete form Data Submited";
+          //$alert=Array("alert_typ"=>"","message"=>"");
+            die(json_encode($alert));
     }
     break;
   default:

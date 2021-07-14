@@ -31,7 +31,12 @@ echo "<p  class='text-warning text-center'>Include number  of  Children or  numb
 
       ?>
 <?php
-$getRecommendedResults="SELECT*FROM rooms JOIN properties on properties.propertyId=rooms.propertyId  WHERE (location= '$_SESSION[sqDestination]' AND  availabilityStatus='Available' AND publoicationStatus='Published' AND roomCapacity='$totalPeople' OR  numberOfBed='$totalPeople') ORDER BY price ASC LIMIT 3";
+$getRecommendedResults="SELECT*FROM rooms JOIN properties on properties.propertyId=rooms.propertyId  WHERE  (availabilityStatus='Available' AND location = '$_SESSION[sqDestination]') AND (roomCapacity='$totalPeople' OR  numberOfBed='$totalPeople' ) ORDER BY price ASC LIMIT 1,3";
+
+/*
+AND publoicationStatus='Published'AND  location= '$_SESSION[sqDestination]'   AND roomCapacity='$totalPeople' OR  numberOfBed='$totalPeople'
+
+*/
 try {
 $getRecommendedResultsQuery=$conn->query($getRecommendedResults);
 
@@ -39,17 +44,24 @@ $getRecommendedResultsQuery=$conn->query($getRecommendedResults);
   $countResult=$getRecommendedResultsQuery->rowCount();
   if($countResult>0){
     ?>
-    <section class="bg-light" id="recomended-room">
+    <div class="" id="after-header">
+
+    </div>
+    <section class="modal-content" id="recomended-room">
+      <div class="modal-header">
+        <p class=" text-success">Recomended Rooms</p>
         <span class="close" id="close-recomended-rooms">&times;</span>
-      <div class="container ">
-    <h4 class="text-center text-success">Recomended Rooms</h4>
-    <?php echo $countResult." Results available"; ?>
-    <hr>
+      </div>
+
+      <div class="modal-body ">
+
+    <?php //echo $countResult." Results available"; ?>
+
       <div class="row">
     <?php
     while($QueryResultsArray=$getRecommendedResultsQuery->fetch()){?>
-      <div class="col-md-4">
-          <div class="card">
+      <div class="col-md-4 ">
+          <div class="card room-card">
               <div class="card-body">
                   <h5><?php echo $QueryResultsArray["roomCategory"] ?> </h5>
                   <p>
@@ -58,7 +70,7 @@ $getRecommendedResultsQuery=$conn->query($getRecommendedResults);
                   <img src="../public/gallery/images/<?php echo $QueryResultsArray["roomCoverPhoto"]?>" alt="" class="img-responsive img-fluid">
                   <p>  <span class="h4 text-warning"> K <?php echo $QueryResultsArray["price"] ?></span> /Night </p>
                   <hr>
-                    <a href="#" class="btn btn-info btn-lg reservationButton" accessKey="<?php echo $QueryResultsArray['roomId']?>">Book Now</a> | <a href="#" class="roomdetailsLink text-primary text-right" accessKey="<?php  echo $QueryResultsArray['roomId']?>">More Details</a>
+                    <a href="#" class="btn btn-info  reservationButton" accessKey="<?php echo $QueryResultsArray['roomId']?>">Book Now</a> | <a href="#" class="roomdetailsLink text-primary text-right" accessKey="<?php  echo $QueryResultsArray['roomId']?>">More Details</a>
               </div>
           </div>
       </div>
@@ -71,11 +83,32 @@ $getRecommendedResultsQuery=$conn->query($getRecommendedResults);
   </section>
   <script type="text/javascript">
     $(function(){
-      $("#recomended-room").css("border","1px solid #1E90FF")
+
+      $("#recomended-room").css("border","1px solid #3CB371")
       $("#recomended-room").css("border-radius","5px")
+      $("#recomended-room").css("width","99%")
       $("#close-recomended-rooms").on("click",()=>{
         $("#recomended-room").fadeOut("fast")
       })
+      // setTimeout(()=>{
+      //   ("#recomended-room").show()
+      // },2000)
+      let roomClass=$(".room-card");
+      console.log(roomClass);
+      for (let i = 0; i<roomClass.length; i++) {
+        $(roomClass[i]).on("mouseover",()=>{
+
+            $(roomClass[i]).toggleClass("form-card");
+            $(roomClass[i]).css("border","1px solid #1E90FF")
+
+        })
+
+        $(roomClass[i]).on("mouseleave",()=>{
+          $(roomClass[i]).toggleClass("form-card")
+          $(roomClass[i]).css("border","")
+
+        })
+      }
     })
   </script>
 
@@ -94,7 +127,7 @@ $getRecommendedResultsQuery=$conn->query($getRecommendedResults);
 ?>
 
       <hr>
-      <h3 class="text-center text-primary">Accomodations at your Destination</h3>
+
       <?php
       //check for pege number equest variabl
   if (isset($_GET["pageno"])) {
@@ -112,7 +145,7 @@ $getRecommendedResultsQuery=$conn->query($getRecommendedResults);
   //setting the sql page offset
   $offset = ($pageno-1) * $no_of_records_per_page;
 
-  $total_pages_sql="SELECT  *  FROM properties JOIN rooms on rooms.propertyId=properties.propertyId WHERE  properties.location = '$_SESSION[sqDestination]' AND  rooms.availabilityStatus='Available' AND publoicationStatus='Published' AND roomCapacity>=$totalPeople OR  numberOfBed>=$totalPeople
+  $total_pages_sql="SELECT *  FROM properties JOIN rooms on rooms.propertyId=properties.propertyId WHERE  (properties.location = '$_SESSION[sqDestination]' AND  rooms.availabilityStatus='Available' AND publoicationStatus='Published') AND (roomCapacity>=$totalPeople OR  numberOfBed>=$totalPeople)
   ";
 
   function totalRows($conn,$sql){
@@ -126,112 +159,130 @@ $getRecommendedResultsQuery=$conn->query($getRecommendedResults);
 
   $total_pages = ceil($total_rows / $no_of_records_per_page);
 
-  //echo $total_pages;
-
-
       $AccomSearchQuery="SELECT*FROM properties JOIN rooms on rooms.propertyId=properties.propertyId WHERE  properties.location = '$_SESSION[sqDestination]' AND  availabilityStatus='Available' AND rooms.publoicationStatus='Published'
       GROUP BY propertyName ORDER BY rooms.price ASC LIMIT $offset,$no_of_records_per_page";
 try {
   $query1=$conn->query($AccomSearchQuery);
   $query1->setFetchMode(PDO::FETCH_ASSOC);
-  while($rows=$query1->fetch()){
-      ?>
-      <section id="about" class="about section-bg">
-        <div class="container" data-aos="fade-up">
-          <div  class="row">
-            <div class="col-lg-6" data-aos="zoom-out" data-aos-delay="100">
-              <h3><a href="../properties/<?php echo$rows['property_link']?>" target="_blank"> <?php echo $rows['propertyName']?></a> </h3>
-              <?php
-              $sql2="SELECT *FROM site_profile WHERE  propertyId='$rows[propertyId]'";
-              try {
-                $query2=$conn->query($sql2);
-                $Result2=$query2->fetch();
-
-                ?>
-                <img src="../public/gallery/images/<?php echo $Result2['propertyCoverPhoto'];?>" class="img-fluid" alt="" style="max-width:400px;">
-                <p class="font-italic text-left"><i class="bx bx-map"></i> <?php echo $Result2['propertyAddress']?></p>
-                <p class="font-italic"><i class="bx bx-envelope"></i> <?php echo $Result2['propertyEmail']?></p>
-                <p class="font-italic"><i class="bx bx-phone-call"></i> <?php echo $Result2['propertyPhone']?></p>
-
-                <?php
-              } catch (PDOException $e) {
-                echo $e->getMessage();
-
-              }
-
-        ?>
-        <p class="text-left"><?php echo $rows['property_description']?></p>
-      </div>
-      <div class="col-lg-6 pt-4 pt-lg-0 content d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="100">
-        <div  class="card">
-          <div  class="card-body">
-            <h3 class="font-italic">
-              <?php echo $rows['roomCategory']?>
-            </h3>
-            <ul>
-              <li>
-                <div>
-                  <img src="../public/gallery/images/<?php echo $rows['roomCoverPhoto']?>" alt="" class="img-responsive" style="max-width:500px;">
-                  <br>
-                  <h5  class="text-left">Room ID: <?php echo $rows['roomName']?>|  Floor <?php echo $rows['FloorNumber']?> |Beds: <?php echo $rows['numberOfBed']?> | <a href="#" class="roomdetailsLink text-primary text-right" accessKey="<?php  echo $rows['roomId']?>">More Detials</a></h5>
-
-                  <div>
-                    <p><span class="h3 text-warning">K <?php echo $rows['price']?></span>  <?php echo $rows['asset_rate_intervals']?> </p>
-                  </div>
-                  <div>
-                    <hr>
-                    <a href="Booknow?roomid=<?php echo $rows['roomId']?>" class="btn btn-info btn-lg reservationButton" accessKey="<?php echo $rows['roomId']?>"> Book Now</a>
-                  </div>
-                </div>
-              </li>
-              <li>
-            </ul>
-        </div>
-        </div>
-      </div>
-      </div>
-      </div>
-
-      </section>
-<hr>
+  $countAccom=$query1->rowCount();
+  if($countAccom>0){
+    ?>
+    <div class="container-fluid">
+      <h4 class=" text-success">Accomodations at your Destination</h4>
       <?php
-  }?>
+      while($rows=$query1->fetch()){
+          ?>
+          <section id="about" class="about section-bg">
+            <div class="container" data-aos="fade-up">
+              <div  class="row">
+                <div class="col-lg-6" data-aos="zoom-out" data-aos-delay="100">
+                  <h5 class="text-primary"><a href="../properties/<?php echo$rows['property_link']?>" target="_blank"> <?php echo $rows['propertyName']?></a> </h5>
+                  <?php
+                  $sql2="SELECT *FROM site_profile WHERE  propertyId='$rows[propertyId]'";
+                  try {
+                    $query2=$conn->query($sql2);
 
-  <div class="container">
-    <div class="row">
-      <div class="col-md-4">
-      </div>
-      <div class="col-md-4">
-        <div class="container">
-          <ul class="pagination">
-        <li><a class="btn <?php if($pageno==1){
-          echo"btn-dark text-muted";
-        }else{
-          echo"btn-info ";
-        }?>" href="<?php if($pageno==1){
-          echo"#";
-        }else{
-          echo"?pageno=1";
-        }?>">First</a></li>
-        <li class="<?php if($pageno <= 1){ echo 'disabled'; } ?>">
-            <a   href="<?php if($pageno <= 1){ echo '#'; } else { echo "?pageno=".($pageno - 1); } ?>" class="btn btn-dark text-muted">Prev</a>
-        </li>
-        <li class="<?php if($pageno >= $total_pages){ echo 'disabled'; } ?>">
-            <a  class="btn <?php if($total_pages>1&&$pageno!=$total_pages){
-              echo "btn-info";
+                    $Result2=$query2->fetch();
+                    ?>
+                    <img src="../public/gallery/images/<?php echo $Result2['propertyCoverPhoto'];?>" class="img-fluid" alt="" style="max-width:400px;">
+                    <p class="font-italic text-left"><i class="bx bx-map"></i> <?php echo $Result2['propertyAddress']?></p>
+                    <p class="font-italic"><i class="bx bx-envelope"></i> <?php echo $Result2['propertyEmail']?></p>
+                    <p class="font-italic"><i class="bx bx-phone-call"></i> <?php echo $Result2['propertyPhone']?></p>
+                    <?php
+                  } catch (PDOException $e) {
+                    echo $e->getMessage();
+                  }
+            ?>
+            <p class="text-left"><?php echo $rows['property_description']?></p>
+          </div>
+          <div class="col-lg-6 pt-4 pt-lg-0 content d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="100">
+            <div  class="card room-card">
+              <div  class="card-body">
+                <h6 class="font-italic">
+                  <?php echo $rows['roomCategory']?>
+                </h6>
+                <ul>
+                  <li>
+                    <div>
+                      <img src="../public/gallery/images/<?php echo $rows['roomCoverPhoto']?>" alt="" class="img-responsive img-fluid">
+                      <br>
+                      <?php if($rows['facilitiesl']!=""){?>
+                        <div class="container-fluid">
+                          <h6 class="text-success">Features</h6>
+                          <p  class="text-left"> <?php echo $rows['facilitiesl']?> </p>
+                        </div>
+                        <?php
+
+                      }else{
+
+                      } ?>
+
+                      <br>
+                      <div>
+                        <p><span class="h3 text-warning">K <?php echo $rows['price']?></span>  <?php echo $rows['asset_rate_intervals']?> </p>
+                      </div>
+                      <div>
+                        <hr>
+                        <a href="Booknow?roomid=<?php echo $rows['roomId']?>" class="btn-lg btn-info  reservationButton" accessKey="<?php echo $rows['roomId']?>"> Book Now</a> | <a href="#" class="roomdetailsLink text-primary text-right" accessKey="<?php  echo $rows['roomId']?>">More Detials</a>
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                </ul>
+            </div>
+            </div>
+          </div>
+          </div>
+          </div>
+          </section>
+    <hr>
+          <?php
+      }?>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+          </div>
+          <div class="col-md-4">
+            <div class="container">
+              <ul class="pagination">
+            <li><a class="btn <?php if($pageno==1){
+              echo"btn-dark text-muted";
             }else{
-              echo "btn-dark text-muted";
-            }?>  " href="?Destination=<?php echo$_SESSION['sqDestination']?><?php if($pageno >= $total_pages){ echo '#'; } else { echo "&pageno=".($pageno + 1); } ?>">Next</a>
-        </li>
-        <li><a class="btn btn-info " href="?pageno=<?php echo $total_pages; ?>">Last</a></li>
-        </ul>
+              echo"btn-info ";
+            }?>" href="<?php if($pageno==1){
+              echo"#";
+            }else{
+              echo"?pageno=1";
+            }?>">First</a></li>
+            <li class="<?php if($pageno <= 1){ echo 'disabled'; } ?>">
+                <a   href="<?php if($pageno <= 1){ echo '#'; } else { echo "?pageno=".($pageno - 1); } ?>" class="btn btn-dark text-muted">Prev</a>
+            </li>
+            <li class="<?php if($pageno >= $total_pages){ echo 'disabled'; } ?>">
+                <a  class="btn <?php if($total_pages>1&&$pageno!=$total_pages){
+                  echo "btn-info";
+                }else{
+                  echo "btn-dark text-muted";
+                }?>  " href="?Destination=<?php echo$_SESSION['sqDestination']?><?php if($pageno >= $total_pages){ echo '#'; } else { echo "&pageno=".($pageno + 1); } ?>">Next</a>
+            </li>
+            <li><a class="btn btn-info " href="?pageno=<?php echo $total_pages; ?>">Last</a></li>
+            </ul>
+            </div>
+          </div>
+          <div class="col-md-4">
+          </div>
         </div>
-      </div>
-      <div class="col-md-4">
       </div>
     </div>
-  </div>
-  <?php
+    <?php
+  }else{
+    ?>
+    <section>
+      <h4 class="text-center text-muted">No  accomodation  Listed for this Destination</h4>
+    </section>
+    
+    <?php
+  }
+
 } catch (PDOException $e) {
 }
 

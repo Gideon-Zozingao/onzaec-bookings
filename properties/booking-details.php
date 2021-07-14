@@ -37,13 +37,15 @@ die();
 switch ($_SERVER["REQUEST_METHOD"]) {
   case 'GET':
   if(isset($_GET["viewBookingId"])){
-    $bookingDetailsSQL="SELECT *FROM  customers JOIN bookings JOIN rooms ON rooms.roomId=bookings.roomId  AND bookings.customerId =customers.customerId WHERE bookings.bookingId='$_GET[viewBookingId]' AND bookings.propertyId='$_SESSION[account_id]'";
-    $bookingDetailsQuery=mysqli_query($conn,$bookingDetailsSQL);
-    if($bookingDetailsQuery==true){
-      $bookingDetailsQueryResults=mysqli_num_rows($bookingDetailsQuery);
+    try {
+      $bookingDetailsSQL="SELECT *FROM  customers JOIN bookings JOIN rooms ON rooms.roomId=bookings.roomId  AND bookings.customerId =customers.customerId WHERE bookings.bookingId='$_GET[viewBookingId]' AND bookings.propertyId='$_SESSION[account_id]'";
+      $bookingDetailsQuery=$conn->query($bookingDetailsSQL);
+      $bookingDetailsQuery->setFetchMode(PDO::FETCH_ASSOC);
+      $bookingDetailsQueryResults=$bookingDetailsQuery->rowCount();
+
       if($bookingDetailsQueryResults>0){
 
-        $bookingDetailsQueryResultsArray=mysqli_fetch_array($bookingDetailsQuery);
+        $bookingDetailsQueryResultsArray=$bookingDetailsQuery->fetch();
         ?>
         <div class="" id="reservationDetils">
 
@@ -163,166 +165,14 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         <h5 class="text-muted text-center">This reservation is Not available</h5>
         <?php
       }
-    }else{
-      echo mysqli_error($conn);
+      
+    } catch (PDOException $e) {
+      echo $e->getMessage();
     }
-    die();
+    
+    
+    
   }
-    // if(isset($_GET['actionThisBooking'])){
-    //   $thisReservationSql="SELECT *FROM bookings JOIN rooms ON rooms.roomId=bookings.roomId WHERE bookingId='$_GET[actionThisBooking]'";
-    //   $thisReservationQuery=mysqli_query($conn,$thisReservationSql);
-    //   if($thisReservationQuery==true){
-    //     $thisReservationQueryResults=mysqli_num_rows($thisReservationQuery);
-    //     if($thisReservationQueryResults>0){
-    //       $thisReservationQueryResultsArray=mysqli_fetch_array($thisReservationQuery);
-    //       ?>
-    <!-- //       <div class="col-md-8 offset-2">
-    //         <form class="" action="" method="post" id="bookingActionForm">
-    //           <input type="hidden" name="actionBookingId" value="<?php echo $thisReservationQueryResultsArray['bookingId']?>">
-    //           <input type="hidden" name="roomId" value="<?php echo $thisReservationQueryResultsArray['roomId']?>">
-    //           <label for="">Comment</label>
-    //           <textarea  class="form-control" name="actionComment" rows="6" cols="80"><?php echo$thisReservationQueryResultsArray['reservationComment']?>
-    //           </textarea>
-    //           <label for="">Update Status</label>
-    //           <select class="form-control" name="reservationStatus">
-    //             <option value="">Check</option>
-    //             <option value="Checked In">Check In</option>
-    //             <option value="Checked Out">Check Out</option>
-    //             <option value="Cancelled">Cancel</option>
-    //           </select>
-    //           <hr>
-    //           <div class="col-md-4 offset-4">
-    //             <button type="submit" class="btn-primary btn-lg">Submit</button>
-    //           </div>
-    //         </form>
-    //       </div>
-    //       <script type="text/javascript">
-    //         $(document).ready(function(){
-    //           $("#bookingActionForm").on("submit",function(e){
-    //             e.preventDefault();
-    //             //alert("Actioning the Reservation")
-    //             $.ajax({
-    //               url:"properties/booking-details",
-    //               type:"POST",
-    //               data:new FormData(this),
-    //       				contentType:false,
-    //       				cache:false,
-    //       				processData:false,
-    //               beforeSend:function(){
-    //                 $("#modal-content").html("<div class='row'><div class='col-md-4'></div><div class='col-md-4'><img src='public/images/loading.gif'></div><div class='col-md-4'></div></div>")
-    //                 $("#modal").fadeIn("slow");
-    //               },
-    //               success:function(data){
-    //                 var JSONdata=JSON.parse(data);
-    //                 if(JSONdata.respose_type=="success"){
-    //                   setTimeout(()=>{
-    //                       $("#modal-content").html(`<span class='alert alert-success col-md-8 offset-2 text-center'>${JSONdata.respose_message}</span>`)
-    //                   },1500)
-    //                   setTimeout(()=>{
-    //                       $("#modal-content").html("")
-    //                       $("#modal").fadeOut("slow")
-    //                   },2000)
-    //                 }else{
-    //                   setTimeout(()=>{
-    //                     $("#modal-content").html(`<span class='alert alert-warning'>${JSONdata.respose_message}</span>`)
-    //                   },1500)
-    //                   setTimeout(()=>{
-    //                       $("#modal-content").html("")
-    //                       $("#modal").fadeOut("slow")
-    //                   },2000)
-    //                 }
-    //
-    //               }
-    //             })
-    //           })
-    //         })
-    //       </script> -->
-    //       <?php
-    //     }else{
-    //       echo "This information Does Not Exist anymore";
-    //     }
-    //   }else{
-    //     echo mysqli_error($conn);
-    //   }
-    //
-    // }
-    // code...
-    break;
-    // case 'POST':
-    //   // code...
-    //   $respose=Array("respose_type"=>"","respose_message"=>"","respose_notes"=>"");
-    //
-    //   $conn=$db->connect();
-    //   if(!$conn){
-    //     $respose['respose_type']="error";
-    //     $respose["respose_message"]="Cannot Process Your requests";
-    //     $respose["respose_notes"]="Connection failed";
-    //     echo(json_encode($response));
-    //     die();
-    //   }
-    //   if(!isset($_SESSION["logedin"])){
-    //     $respose['respose_type']="error";
-    //     $respose["respose_message"]="Cannot Process Your requests";
-    //     $respose["respose_notes"]="Please Login to Have access to This Section";
-    //     echo(json_encode($response));
-    //     // "Please Login to Have access to This Section";
-    //     die();
-    //   }
-    //   if(!isset($_SESSION['account'])&&($_SESSION['account'])!=="advanced"&&$_SESSION['accountType']!=="propertyacc"){
-    //     $respose['respose_type']="error";
-    //     $respose["respose_message"]="Your are Not allowed to perform this action";
-    //     $respose["respose_notes"]="Login to your property Accoun to have access to this section";
-    //     echo(json_encode($response));
-    //   	//echo "Login to your property Accoun to have access to this section";
-    //   die();
-    //   }
-    //   if(isset($_POST["actionBookingId"])&&isset($_POST["actionComment"])&&isset($_POST["reservationStatus"])&&isset($_POST["roomId"])){
-    //     include("../controllers/classes/room-class.php");
-    //     $room=new Room();
-    //
-    //     $updateBookingSlq="UPDATE bookings SET reservationComment='$_POST[actionComment]', reservationStatus='$_POST[reservationStatus]' WHERE bookingId='$_POST[actionBookingId]'";
-    //        $updateBookingQuery=mysqli_query($conn,$updateBookingSlq);
-    //     if($updateBookingQuery===true){
-    //       switch ($_POST["reservationStatus"]) {
-    //         case 'Checked Out':
-    //           // code...
-    //           $room->setRoomId($_POST["roomId"]);
-    //           $room->setavailabilityStatus("Available");
-    //           $room->updateAvailablityStatus($conn);
-    //           $respose['respose_type']="success";
-    //           $respose["respose_message"]=$_POST['reservationStatus']." Successfully";
-    //           $respose["respose_notes"]="An Email will be sent to Guest Email regarding this change";
-    //           echo(json_encode($respose));
-    //           break;
-    //           case 'Cancelled':
-    //             // code...
-    //             $room->setRoomId($_POST["roomId"]);
-    //             $room->setavailabilityStatus("Available");
-    //             $room->updateAvailablityStatus($conn);
-    //             $respose['respose_type']="success";
-    //             $respose["respose_message"]=$_POST['reservationStatus']." Successfully";
-    //             $respose["respose_notes"]="An Email will be sent to Guest Email regarding this change";
-    //             echo(json_encode($respose));
-    //             break;
-    //
-    //         default:
-    //           // code...
-    //
-    //           $respose['respose_type']="success";
-    //           $respose["respose_message"]=$_POST['reservationStatus']." Successfully";
-    //           $respose["respose_notes"]="An Email will be sent to Guest Email regarding this change";
-    //           echo(json_encode($respose));
-    //           break;
-    //       }
-    //
-    //     }else{
-    //       $respose['respose_type']="error";
-    //       $respose["respose_message"]="Error Updating Booking information";
-    //       $respose["respose_notes"]="Try again Later ".mysqli_error($conn);
-    //       echo(json_encode($respose));
-    //     }
-    //     die();
-    //   }
       break;
 
   default:

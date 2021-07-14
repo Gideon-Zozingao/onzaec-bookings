@@ -69,7 +69,8 @@ class PropertySiteProfile{
       return $propertyMapInfo;
     }
     public function createSiteProfile($connect){
-      $sql="INSERT INTO site_profile(
+      try {
+        $sql="INSERT INTO site_profile(
         siteProfileId,
         propertyId,
         propertyHeading,
@@ -89,17 +90,22 @@ class PropertySiteProfile{
           '$this->propertyEmail',
           '$this->propertyPhone',
           '$this->propertyMapInfo')";
-      $query=mysqli_query($connect,$sql);
-      if($query){
-        return true;
-      }else{
+      $query=$connect->prepare($sql);
+        $query->execute();
+        $count=$query->rowCount();
+        if ($count>0) {
+          return true;
+        } else {
+          return FALSE;
+        } 
+      } catch (PDOException $e) {
         return FALSE;
       }
     }
 
     public function updatePropertySiteInfo($conn){
-      $sql="UPDATE site_profile SET
-        
+      try {
+              $sql="UPDATE site_profile SET
         propertyHeading='$this->propertyHeading',
         site_profileSubheading='$this->site_profileSubheading',
         propertyCoverPhoto='$this->propertyCoverPhoto',
@@ -108,12 +114,18 @@ class PropertySiteProfile{
         propertyPhone='$this->propertyPhone',
         propertyMapInfo='$this->propertyMapInfo' WHERE  propertyId='$this->siteProfileId'";
 
-        $query=mysqli_query($connect,$sql);
-        if($query){
+        $query=$connect->prepare($sql);
+        $query->execute();
+        $count=$query->rowCount();
+        if ($count>0) {
           return true;
-        }else{
+        } else {
           return FALSE;
         }
+      } catch (PDOException $e) {
+        return FALSE;
+      }
+
     }
 }
 ?>

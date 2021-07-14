@@ -8,7 +8,6 @@ private $userId;
 private $commentText;
 private $commentDate;
 private $commentTime;
-
   function __construct($commentId)
   {
     $this->commentId=$commentId;
@@ -51,22 +50,35 @@ private $commentTime;
   }
 
   public function resgisterComment($conn){
-    $sql="INSERT INTO reservation_comments(commentId, 	reservationId,userId,commentText,commentDate,commentTime) VALUES('$this->commentId','$this->reservationId','$this->userId','$this->commentText','$this->commentDate','$this->commentTime')";
-    $query=mysqli_query($conn,$sql);
-    if($query==true){
-      return true;
-    }else{
-      return FALSE;
+    try {
+      $sql="INSERT INTO reservation_comments(commentId,   reservationId,userId,commentText,commentDate,commentTime) VALUES('$this->commentId','$this->reservationId','$this->userId','$this->commentText','$this->commentDate','$this->commentTime')";
+            $query=$conn->prepare($sql);
+            $query->execute();
+            $count=$query->rowCount();
+            if($count>0) {
+                return true;
+          }else {
+                return FALSE;
+          }
+    } catch (PDOException $e) {
+      return  FALSE;
     }
+    
   }
   
   public function deleteComment($conn){
-    $sql="DELETE FROM reservation_comments WHERE commentId='$this->commentId'";
-    $query=mysqli_query($conn,$sql);
-    if($query==true){
-      return true;
-    }else{
-      return FALSE;
+    try {
+        $sql="DELETE FROM reservation_comments WHERE commentId='$this->commentId'";
+          $query=$conn->prepare($sql);
+          $query->execute();
+          $count=$query->rowCount();
+        if ($count>0) {
+              return true;
+          } else {
+              return FALSE;
+          }       
+    } catch (PDOException $e) {
+            return FALSE;
     }
   }
 }

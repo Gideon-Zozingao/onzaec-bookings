@@ -16,15 +16,18 @@ if(isset($_SESSION['logedin'])&&$_SESSION['logedin']==true){
       if($userType==="general"){
         header("Location:./");
       }
-      $q2="SELECT*FROM  user_accounts  WHERE accId='$accountId'";
-      $query2=mysqli_query($conn,$q2);
-      if($query2==true){
-        $results2=mysqli_num_rows($query2);
-        if($results2>0){
-          $row2=mysqli_fetch_array($query2);
-          ?>
 
-            <div  class="col-md-10 offset-1">
+
+try {
+
+  $q2="SELECT*FROM  user_accounts  WHERE accId='$accountId'";
+      $query2=$conn->query($q2);
+        $query2->setFetchMode(PDO::FETCH_ASSOC);
+        $results2=$query2->rowCount();
+        if($results2>0){
+          $row2=$query2->fetch();
+          ?>
+          <div  class="col-md-10 offset-1">
               <div  class="card" id="form-card">
                 <div  class="card-header">
                   <p  class="h5">You  are switching to  <span class="text-primary"><?php echo $row2['accountName']; ?></span>  </p>
@@ -47,7 +50,7 @@ if(isset($_SESSION['logedin'])&&$_SESSION['logedin']==true){
                   </form>
                 </div>
                 <div  class="card-footer">
-                  <a href="account.switch" id="account-switch">Switch  Account</a
+                  <a href="account.switch" id="account-switch">Switch  Account</a>
                 </div>
               </div>
               </div>
@@ -80,13 +83,11 @@ if(isset($_SESSION['logedin'])&&$_SESSION['logedin']==true){
         url:"../controllers/account.switch.confirm",
         type:"POST",
         data:new FormData(this),
-				contentType:false,
-				cache:false,
-				processData:false,
+        contentType:false,
+        cache:false,
+        processData:false,
         beforeSend:function(){
           $("#response").html("<div class='row'><div class='col-md-4'></div><div class='col-md-4'><img src='public/images/loading.gif'></div><div class='col-md-4'></div></div>")
-
-        //$("#modal").show()
         },
         success:function(data){
           $("#response").html("")
@@ -118,49 +119,37 @@ if(isset($_SESSION['logedin'])&&$_SESSION['logedin']==true){
   })
 </script>
           <?php
+
+        }else{
+
         }
-      }else{
-        echo mysqli_error($conn);
-      }
+} catch (PDOException $e) {
+  
+}
+
     }else{
-      if($conn==true){
-      $qery1="SELECT*FROM user_accounts WHERE accoutOwnerId='$_SESSION[id]'";
-      $query=mysqli_query($conn,$qery1);
-      if(!$query){
-      die(mysqli_error($query));
-      }
-      $results=mysqli_num_rows($query);
-      if($results>0){
+      try {
+          $qery1="SELECT*FROM user_accounts WHERE accoutOwnerId='$_SESSION[id]'";
+            $query=$conn->query($qery1);
+            $query->setFetchMode(PDO::FETCH_ASSOC);
+            $results=$query->rowCount();
+            if($results>0){
       ?>
 <div class="card">
   <div class="card-body">
-
-
-
-
       <?php
-      while($rows=mysqli_fetch_array($query)){
+      while($rows=$query->fetch()){
       ?>
-
-
-
           <p class="h4 "><?php echo$rows['accountName']?></p>
-
-
           <p>Your are <?php echo$rows['userType']?>  user of this account</p>
           <p>Joined @ <?php echo$rows['registrationDate']?></p>
-
-
           <nav class="navbar">
             <a href="?action=switchAccount&to=<?php echo$rows["accId"]?>&uType=<?php echo$rows['userType']?>" class="text-primary h5 accountSwitButton" accessKey="<?php echo$rows["accId"]?>" name="<?php echo$rows['userType']?>">Sign in</a>
           </nav>
         <hr>
-
-
       <br>
       <?php
       }?>
-
       <script type="text/javascript">
         $(document).ready(()=>{
           var accountSwitButton=$(".accountSwitButton");
@@ -189,7 +178,12 @@ if(isset($_SESSION['logedin'])&&$_SESSION['logedin']==true){
       }else{
       die("You  do not have Accounts  Attached  to  you");
       }
+        
+      } catch (PDOException $e) {
+        
       }
+        
+      
     }
     ?>
   </div>

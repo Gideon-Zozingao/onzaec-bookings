@@ -1,11 +1,11 @@
-<!-- <nav class="navbar bg-light">
+<nav class="navbar bg-light">
 <a href="#" class="nav-links btn btn-default" id="edit-profile"> Profile Informtion</a>
 <a href="#" class="nav-link btn btn-default" id="changecontacts"> Contacts Settings</a>
 <a href="#" class="nav-link btn btn-default" id="changepassword"> Password Settings</a>
 
 <a href="#" class="nav-links btn btn-default" id="delete-Account">Delete Account</a>
 
-</nav> -->
+</nav>
 <div class="" id="action-pane">
 </div>
 <script type="text/javascript">
@@ -49,7 +49,7 @@
           },1500)
         }
       })
-      //$("#action-pane").html("Change Your Password Now")
+      
     })
     $("#changecontacts").click((e)=>{
       e.preventDefault();

@@ -95,123 +95,156 @@ class User{
 
       public  function  getUserRegistrationDate(){return $this->registrationDate;}
 
-
       //varifying the existece  of  the User  Phone Numer
       public  function  varifyPhone($dbConnection){
-        $q="SELECT * from  user  WHERE phone='$this->userPhone'";
-        $query=mysqli_query($dbConnection,$q);
-        if($query){
-          $rowCount=mysqli_num_rows($query);
-          if($rowCount>0){
-            return  $rowCount;
+        try {
+          $q="SELECT * from  user  WHERE phone='$this->userPhone'";
+          $query=$dbConnection->query($q);
+          $query->setFetchMode(PDO::FETCH_ASSOC);
+          $count=$query->rowCount();
+          if($count>0){
+            return $count;
           }else{
             return  0;
           }
-        }else{
-          return  "Error: ".mysqli_error($dbConnection);
+        } catch (PDOException $e) {
+          return null;
         }
       }
+
+
       public  function  varifyEmail($dbConnection){
+        try {
           $q="SELECT * from  user  WHERE email='$this->userEmail'";
-          $query=mysqli_query($dbConnection,$q);
-          if($query){
-            $rowCount=mysqli_num_rows($query);
-            if($rowCount>0){
-              return  $rowCount;
-            }else{
-              return  0;
-            }
+          $query=$dbConnection->query($q);
+          $query->setFetchMode(PDO::FETCH_ASSOC);
+          $count=$query->rowCount();
+          if($count>0){
+            return $count;
           }else{
-            return  "Error: ".mysqli_error($dbConnection);
+            return 0;
           }
+        } catch (PDOException $e) {
+            return null;
+        }
       }
+
       public  function  varifyUserName($dbConnection){
-        $q="SELECT * from  user  WHERE username='$this->username'";
-        $query=mysqli_query($dbConnection,$q);
-        if($query){
-          $rowCount=mysqli_num_rows($query);
-          if($rowCount>0){
-              return  $rowCount;
-          }else{
-              return  0;
-          }
-        }else{
-            return  "Error: ".mysqli_error($dbConnection);
+        try {
+            $q="SELECT * from  user  WHERE username='$this->username'";
+            $query=$dbConnection->query($q);
+            $query->setFetchMode(PDO::FETCH_ASSOC);
+            $rowCount=$query->rowCount();
+            if($rowCount>0){
+              return $rowCount;
+            }else{
+              return 0;
+            }
+        } catch (PDOException $e) {
+          return null;
         }
       }
 
       public  function  registerUser($dbConnection){
+        try {
           $q="INSERT  INTO  user(userId,name,surname,dateOfBirth,gender ,country,state,address,phone,email,userType,avata,username,password,registrationDate)VALUES('$this->id','$this->name','$this->surname','$this->dateOfBirth','$this->gender','$this->userCountry','$this->userState',
           '$this->postalAddress','$this->userPhone','$this->userEmail',
             '$this->userType',
             '$this->avata',
             '$this->username','$this->password','$this->registrationDate')";
-            $query=mysqli_query($dbConnection,$q);
-            if($query==true){
+            $query=$dbConnection->prepare($q);
+              $query->execute();
+              $count=$query->rowCount();
+              if ($count>0) {
                 return true;
-            }else{
-                return  mysqli_error($dbConnection);
-            }
+              }else{
+                return false;
+              }
+        } catch (PDOException $e) {
+          return FALSE;
+        }
       }
 
       public  function  authUSer($dbConnection){
-        $q="SELECT * from  user  WHERE username='$this->username'AND  password='$this->password'";
-        $query=mysqli_query($dbConnection,$q);
-        if($query){
-          $rowCount=mysqli_num_rows($query);
-          if($rowCount>0){
-            $rows=mysqli_fetch_array($query);
-              return  $rows;
-          }else{
-              return  0;
-          }
-        }else{
-            return  FALSE;
+        try {
+              $q="SELECT *FROM  user  WHERE username='$this->username'AND  password='$this->password'";
+                  $query=$dbConnection->query($q);
+                  $query->setFetchMode(PDO::FETCH_ASSOC);
+                  $rowCount=$query->rowCount();
+                  if ($rowCount>0) {
+                    $rows=$query->fetch();
+                    return $rows;
+                  }else{
+                    return 0;
+                  }
+        } catch (PDOException $e) {
+          return null;
         }
       }
 
         public  function  viewUSer($dbConnection){
+          try {
             $q="SELECT* FROM user  WHERE userId='$this->id'";
-            $query=mysqli_query($dbConnection,$q);
-            if($query){
-              $results=mysqli_num_rows($query);
-              if($results>0){
-                $resut_row=mysqli_fetch_array($query);
-                return  $resut_row;
-              }else{
-                return  0;
-              }
+            $query=$dbConnection->query($q);
+            $query->setFetchMode(PDO::FETCH_ASSOC);
+            $count=$query->rowCount();
+            if ($count>0) {
+              $rows=$query->fetch();
+              return $rows;
             }else{
-              return  FALSE;
+              return 0;
             }
+          } catch (PDOException $e) {
+              return FALSE;
+          }
       }
     public function updateAvat($conn){
-      $sql="UPDATE user SET avata='$this->avata' WHERE userId='$this->id'";
-      $query=mysqli_query($conn,$sql);
-      if($query==true){
-        return true;
-      }else{
-        return FALSE;
+      try {
+        $sql="UPDATE user SET avata='$this->avata' WHERE userId='$this->id'";
+        $query=$conn->prepare($sql);
+        $query->execute();
+        $count=$query->rowCount();
+        if ($count>0) {
+            return true;
+        }else{
+            return FALSE;
+        }
+      } catch (PDOException $e) {
+          return FALSE;
       }
     }
+
+
     public function changePassword($conn){
-      $sql="UPDATE user SET password='$this->password' WHERE userId='$this->id'";
-      $query=mysqli_query($conn,$sql);
-      if($query==true){
-        return true;
-      }else{
-        return FALSE;
+      try {
+            $sql="UPDATE user SET password='$this->password' WHERE userId='$this->id'";
+              $query=$conn->prepare($sql);
+              $query->execute();
+              $count=$query->rowCount();
+              if($count>0){
+                return true;
+              }else{
+                return FALSE;
+              }
+      } catch (PDOException $e) {
+          return FALSE;
       }
     }
 
     public function updateUserInformation($conn){
-      $sql="UPDATE user SET name='$this->name',surname='$this->surname',dateOfBirth='$this->dateOfBirth',gender='$this->gender' ,country='$this->userCountry',state='$this->userState',address='$this->postalAddress'  WHERE userId='$this->id'";
-      $query=mysqli_query($conn,$sql);
-      if($query==true){
-        return true;
-      }else{
-        return FALSE;
-      }
+       try {
+           $sql="UPDATE user SET name='$this->name',surname='$this->surname',dateOfBirth='$this->dateOfBirth',gender='$this->gender' ,country='$this->userCountry',state='$this->userState',address='$this->postalAddress'  WHERE userId='$this->id'";
+           $query=$conn->prepare($sql);
+           $query->execute();
+           $count=$query->rowCount();
+           if($count>0){
+            return true;
+           }else{
+            return FALSE;
+           }
+       } catch (PDOException $e) {
+         return FALSE;
+       }
     }
 }
 

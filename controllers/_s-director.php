@@ -13,7 +13,7 @@ if($_SERVER["REQUEST_METHOD"]=="POST"){
   		$numberOfChildren=intval($_POST["numberOfChildren"]);
   		$checkoutdate=$_POST["checkoutdate"];
   		$checkinDate=$_POST["checkinDate"];
-  		$destination=$_POST["destination"];
+  		$destination=trim(preg_replace('/\s+/', " ", $_POST["destination"])) ;
   		//initiating search session variales
 
   		$_SESSION["sqNumberOfAdult"]=$numberOfAdult;
@@ -21,7 +21,9 @@ if($_SERVER["REQUEST_METHOD"]=="POST"){
   		$_SESSION["sqDestination"]=$destination;
   		$_SESSION["sqCheckinDate"]=$checkinDate;
   		$_SESSION["sqCheckoutdate"]=$checkoutdate;
-		header("Location:../search.accomodations.php?Destination=$_SESSION[sqDestination]");
+  		$urlDestParam=str_replace(" ","-",strtolower($destination));
+
+		header("Location:../search.accomodations.php?Destination=$urlDestParam");
 
 }else{
 		header("Location:../search.accomodations.php");

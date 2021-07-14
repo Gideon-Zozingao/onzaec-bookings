@@ -165,31 +165,54 @@ public function getReservationBill(){
 
 //Update reservation Status
 public function updateReservationStatus($conn){
-      $sql="UPDATE bookings SET reservationStatus='$this->reservationStatus' WHERE bookingId='$this->bookingId'";
-      $query=mysqli_query($conn,$sql);
-      if($query==true){
-          return true;
-      }else{
-          return FALSE;
-      }
+  try {
+    $sql="UPDATE bookings SET reservationStatus='$this->reservationStatus' WHERE bookingId='$this->bookingId'";
+    $query=$conn->prepare($sql);
+    $query->execute();
+    $affected=$query->rowCount();
+    if($affected>0){
+      return true;
+    }else{
+            return FALSE;
+    }
+
+  } catch (PDOException $e) {
+    return FALSE;
+  }
+
 }
 public function checkOut($conn){
-  $sql="UPDATE bookings SET reservationStatus='$this->reservationStatus',reservationComment='$this->reservationComment',checkOutDate='$this->checkOutDate',reservationBill='$this->reservationBill' WHERE bookingId='$this->bookingId'";
-  $query=mysqli_query($conn,$sql);
-  if($query==true){
+  try {
+        $sql="UPDATE bookings SET reservationStatus='$this->reservationStatus',reservationComment='$this->reservationComment',checkOutDate='$this->checkOutDate',reservationBill='$this->reservationBill' WHERE bookingId='$this->bookingId'";
+
+          $query=$conn->prepare($sql);
+
+          $query->execute();
+          $affected=$query->rowCount();
+          if ($affected>0) {
+            return true;
+          }else{
+                return FALSE;
+          }
+
+  } catch (PDOException $e) {
+    return FALSE;
+  }
+}
+public function updateReservationComment($conn){
+try {
+      $sqli="UPDATE bookings SET reservationComment='$this->reservationComment' WHERE bookinId='$this->bookingId'";
+      $query=$conn->prepare($sql);
+      $query->execute();
+      $affected=$query->rowCout();
+  if ($affected>0) {
       return true;
   }else{
       return FALSE;
   }
+} catch (PDOException $e) {
+  return FALSE;
 }
-public function updateReservationComment($conn){
-  $sqli="UPDATE bookings SET reservationComment='$this->reservationComment' WHERE bookinId='$this->bookingId'";
-  $query=mysqli_query($conn,$sql);
-  if($query==true){
-    return true;
-  }else{
-    return FALSE;
-  }
 }
 //booking Notification View function
 public function updateNotificationSeen($conn){
@@ -204,25 +227,31 @@ public function updateNotificationSeen($conn){
 
 // create bookings and record the boking in the database
 public function makeBooking($conn){
-  $sql="INSERT INTO bookings VALUES(
-     '$this->bookingId',
-     '$this->roomId',
-     '$this->propertyId',
-     '$this->checkInDate',
-     '$this->checkOutDate',
-     '$this->customerId',
-     '$this->reserVationCode',
-     '$this->reservationStatus',
-     '$this->reservationDate',
-     '$this->children',
-     '$this->adults',
-     '$this->notificationSeen',
-     '$this->customerMessage','$this->reservationComment','$this->reservationBill')";
-  $query =mysqli_query($conn,$sql);
-  if($query==true){
-    return  true;
-  }else{
-    return FALSE;
+  try {
+    $sql="INSERT INTO bookings VALUES(
+       '$this->bookingId',
+       '$this->roomId',
+       '$this->propertyId',
+       '$this->checkInDate',
+       '$this->checkOutDate',
+       '$this->customerId',
+       '$this->reserVationCode',
+       '$this->reservationStatus',
+       '$this->reservationDate',
+       '$this->children',
+       '$this->adults',
+       '$this->notificationSeen',
+       '$this->customerMessage','$this->reservationComment','$this->reservationBill')";
+       $query =$conn->prepare($sql);
+       $query->execute();
+       $affected=$query->rowCount();
+       if ($affected>0) {
+         return true;
+       }else{
+         return FALSE;
+       }
+  } catch (PDOException $e) {
+      return FALSE;
   }
 }
 }

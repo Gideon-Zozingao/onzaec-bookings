@@ -2,42 +2,38 @@
 
 <?php
 session_start();
-//use the configuration file  and file virables
-// function dateDiff($date1,$date2){
-//
-// //change the date string to timestamps and  take the difference of the later and previous date
-//   $diff=strtotime($date2)-strtotime($date1);
-//   //1 day=24hours
-//   //24*60*60=86400  seconds
-//
-//   return(abs(round($diff/(24*60*60))));
-//
-// }
+
 include("../controllers/config.php");
 //use the db class and db connection functions
 include("../controllers/classes/db-class.php");
-$db=new db($h,$u,$pass,$db);
 
+$db=new db($h,$u,$pass,$db);
 $conn=$db->connect();
+
 if(!$conn){
   ?>
-<div class="alert alert-warning">
-  <h5 class="text-muted text-center">Cannot Access this Section</h5>
-  <p class="text-center">Connection Failed</p>
-</div>
+    <div class="alert alert-warning">
+        <h5 class="text-muted text-center">Cannot Access this Section</h5>
+        <p class="text-center">Connection Failed</p>
+    </div>
   <?php
   die();
 }
+
 if(!isset($_SESSION["logedin"])){
-  echo "Please Login to Have access to This Section";
-  die();
+      echo "Please Login to Have access to This Section";
+      die();
 }
-if(isset($_SESSION['logedin'])&&isset($_SESSION['account'])&&$_SESSION['accountType']==="propertyacc"){
-$roomslq="SELECT  * FROM  rooms WHERE propertyId='$_SESSION[account_id]' and publoicationStatus='Published'";
-$roomQuery=mysqli_query($conn,$roomslq);
-if($roomQuery==true){
-$results=mysqli_num_rows($roomQuery);
-if($results>0){?>
+
+if(isset($_SESSION['logedin'])&&isset($_SESSION['account'])
+  &&$_SESSION['accountType']==="propertyacc"){
+  
+  try {
+    $roomslq="SELECT  * FROM  rooms WHERE propertyId='$_SESSION[account_id]' and publoicationStatus='Published'";
+    $roomQuery=$conn->query($roomslq);
+    $roomQuery->setFetchMode(PDO::FETCH_ASSOC);
+    $results=$roomQuery->rowCount();
+    if($results>0){?>
 
               <table class="table table-striped">
                 <thead>
@@ -56,43 +52,43 @@ if($results>0){?>
 
               <div class="row">
   <?php
-while($roomRows=mysqli_fetch_array($roomQuery)){
+while($roomRows=$roomQuery->fetch()){
   ?>
-<tr>
-  <td><a href="?action=view&page=rooms&room=<?php echo$roomRows['roomId']?>"><?php echo$roomRows['roomName']?></a> </td>
-  <td><?php echo$roomRows['roomCategory']?></td>
-  <td><?php echo$roomRows['FloorNumber']?></td>
-  <td><?php echo$roomRows['numberOfBed']?></td>
-  <td><span  class="text-center  text-warning"> K  <?php echo$roomRows['price']?>/Night</span></td>
-  <td><?php echo$roomRows['roomCapacity']?></td>
-  <td><?php
-  echo $roomRows['publoicationStatus'];
-if($roomRows['publoicationStatus']=="Available"){
-  ?><span class="text-success"><?php echo$roomRows['publoicationStatus'] ?></span> <?phpecho$roomRows['publoicationStatus']
-}else{?>
-    <span class="text-warning"><?php echo$roomRows['publoicationStatus'] ?> </span>
-  <?php
+    <tr>
+          <td><a href="?action=view&page=rooms&room=<?php echo$roomRows['roomId']?>"><?php echo$roomRows['roomName']?></a> </td>
+          <td><?php echo$roomRows['roomCategory']?></td>
+          <td><?php echo$roomRows['FloorNumber']?></td>
+          <td><?php echo$roomRows['numberOfBed']?></td>
+          <td><span  class="text-center  text-warning"> K  <?php echo$roomRows['price']?>/Night</span></td>
+          <td><?php echo$roomRows['roomCapacity']?></td>
+          <td><?php
+          echo $roomRows['publoicationStatus'];
+        if($roomRows['publoicationStatus']=="Available"){
+          ?><span class="text-success"><?php echo$roomRows['publoicationStatus'] ?></span> <?phpecho$roomRows['publoicationStatus']
+        }else{?>
+            <span class="text-warning"><?php echo$roomRows['publoicationStatus'] ?> </span>
+          <?php
 
-}
-  ?></td>
-  <td><?php
-  if($roomRows['availabilityStatus']=="Available"){
-    ?><span class="text-success"><?php echo$roomRows['availabilityStatus'] ?></span> <?php
-  }else{?>
-      <span class="text-warning"><?php echo$roomRows['availabilityStatus'] ?> </span>
-    <?php
+        }
+          ?></td>
+          <td><?php
+          if($roomRows['availabilityStatus']=="Available"){
+            ?><span class="text-success"><?php echo$roomRows['availabilityStatus'] ?></span> <?php
+          }else{?>
+              <span class="text-warning"><?php echo$roomRows['availabilityStatus'] ?> </span>
+            <?php
 
-  }
-    ?>
-  </td>
-  <td><a href="" class="roomDetails" accessKey="<?php echo$roomRows['roomId']?>"><span class="fas fa-info"></span> Details </a> | <a href="" class="editroomDetails" accessKey="<?php echo $roomRows['roomId']?>"><span class="fas fa-edit"></span> Edit</a>
-    <?php if($roomRows['availabilityStatus']=="Available"){
-    ?>
-|<a href="#" class="checkinLink" accessKey="<?php echo $roomRows['roomId']?>">Checkin</a>
-    <?php
-  }?>
-  </td>
-</tr>
+          }
+            ?>
+          </td>
+          <td><a href="" class="roomDetails" accessKey="<?php echo$roomRows['roomId']?>"><span class="fas fa-info"></span> Details </a> | <a href="" class="editroomDetails" accessKey="<?php echo $roomRows['roomId']?>"><span class="fas fa-edit"></span> Edit</a>
+            <?php if($roomRows['availabilityStatus']=="Available"){
+            ?>
+        |<a href="#" class="checkinLink" accessKey="<?php echo $roomRows['roomId']?>">Checkin</a>
+            <?php
+          }?>
+          </td>
+    </tr>
   <?php
 }
 ?>
@@ -181,7 +177,7 @@ for(let i=0;i<checkinLink.length;i++){
 </table>
 
 <?php
-}else{?>
+  }else{?>
   <br>
 <section class="container">
 
@@ -191,16 +187,17 @@ for(let i=0;i<checkinLink.length;i++){
 
 </section>
   <?php
-}
-}else{?>
+}  
+  } catch (PDException $e) {
+    ?>
 <div class="alert alert-warning">
 <h2>Cannot access inforamtion about your room snow</h2>
 <p>Connection Error</p>
 </div>
 
   <?php
-  //echo "Cannot Access your Inforamtion";
-}
+  }
+
 
 }else{
 die("Unknow Error");

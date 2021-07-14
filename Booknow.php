@@ -39,7 +39,11 @@ if(isset($_REQUEST['roomid'])){
     $getRoomCount=$getRoomQuery->rowCount();
     if ($getRoomCount>0) {
       $getRoomResults=$getRoomQuery->fetch();
-
+if($getRoomResults['availabilityStatus']!="Available"){
+  echo "<h6 class='text-muted text-center'>This room is Occupied. </h5>";
+  echo "<p class='text-center'> Book a Diferent Room</p>";
+  die();
+}
       if(isset($_SESSION["sqNumberOfAdult"])&&isset($_SESSION["sqNumberOfChildren"])&&isset($_SESSION["sqDestination"])&&isset($_SESSION["sqCheckoutdate"])&&isset($_SESSION["sqCheckinDate"])){
       ?>
       <div class="card" id="form-card">
@@ -428,7 +432,7 @@ if(isset($_REQUEST['roomid'])){
 
             //before sending the form
             beforeSend : function(){
-              $("#message").html("<span class='alert  alert-info text-info'>  Processing...</span>").show();
+              $("#message").html("<div class='row'><div class='col-md-4'></div><div class='col-md-4'><img src='../public/images/loading.gif'></div><div class='col-md-4'></div></div>").show();
             },
             //form issuccesfull submited and response rescived without failure
             success:function(data){
@@ -446,13 +450,19 @@ if(isset($_REQUEST['roomid'])){
                       $("#modal").fadeOut('fast')
                     },2000)
                     setTimeout(()=>{
+                      $(".modal-top-content").css("box-shadow","box-shadow: 1px 1px 4px 2px rgba(0, 0, 0, 0.5)")
                       $("#modal-content-sm").html(`<h5 class='text-center'><span class='text-primary h3'>${responsedata.reseponese_note}</span> is your Reservation Code</h5><p class='text-center '>It is important you retain this Code for your Confirmation Upon Check in</p>`)
                       $("#modal-sm").slideToggle("1000")
                     },3000)
                   } else{
-                    $("#message").html(`<span class='alert  alert-danger text-danger'>${responsedata.respose_message}</span>`).show();
+                    $("#modal-top-body").html(`<span class=' text-danger text-center'>${responsedata.respose_message}</span>`)
                     setTimeout(()=>{
-                      $("#message").fadeOut('slow')
+                      $("#message").html("")
+                      $("#modal-top").fadeIn("slow");
+                    },1500)
+
+                    setTimeout(()=>{
+                      $("#modal-top").fadeOut('slow')
                     },3000)
                     //window.location.replace("/")
                   }
